@@ -1,10 +1,12 @@
-package com.hades.example.leankotlin._3_compatibility
+package com.hades.example.leankotlin._3_java_kotlin_invoke_each_other
+
+import com.hades.example.leankotlin._3_java_kotlin_invoke_each_other._3_1_kotlin_genetate_static_class.City
 
 fun main() {
-    // Java 调用 Kotlin
+    // Kotlin 调用 Java
     City.sayHi("friend")
 
-    var city = City();
+    val city = City();
     city.goHome("XY")
 }
 
