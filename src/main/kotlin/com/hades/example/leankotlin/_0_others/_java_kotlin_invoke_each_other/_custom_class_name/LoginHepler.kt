@@ -1,6 +1,6 @@
 @file:JvmName("LoginUtils")
 
-package com.hades.example.leankotlin._3_java_kotlin_invoke_each_other._3_2_custom_class_name
+package com.hades.example.leankotlin._0_others._java_kotlin_invoke_each_other._custom_class_name
 
 fun login(name: String) {
     println("Hi $name")

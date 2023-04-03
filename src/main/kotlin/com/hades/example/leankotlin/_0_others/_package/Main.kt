@@ -1,4 +1,4 @@
-package com.hades.example.leankotlin._package
+package com.hades.example.leankotlin._0_others._package
 
 /**
  * package:

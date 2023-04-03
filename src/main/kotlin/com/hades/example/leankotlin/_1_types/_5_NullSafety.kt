@@ -1,32 +1,6 @@
-package com.hades.example.leankotlin
-
-// Data  : 常量 val、变量 var
-
-/**
- * Data type
- * 1 For constant and variable ?
- * val means value.
- * This is a read-only value.
- *
- * 2 自动类推断
- *
- * var means variable.
- * This is a mutable value.
- *
- * 2 Kotlin's data type is null safe
- *
- */
+package com.hades.example.leankotlin._1_types
 
 fun main() {
-    // 1 Variable
-    var age: Int = 18
-    val num = 10
-    // Compile error : Val cannot be reassigned
-    // num = 20
-
-    // 2 自动类型推断
-    var age2 = 18
-
     // 3 空安全类型
     // (1) non-null type,  不能赋值 null
     var nameOfNon_null: String = "Vicky"
@@ -39,8 +13,8 @@ fun main() {
     // (3) non-null type  cannot= nullable type, but can use !! to force convert nullable type to non-null type
     /**
      * compile error :Type mismatch.
-       Required: String
-       Found:    String?
+    Required: String
+    Found:    String?
      */
 //    nameOfNon_null = nameOfNullable
 

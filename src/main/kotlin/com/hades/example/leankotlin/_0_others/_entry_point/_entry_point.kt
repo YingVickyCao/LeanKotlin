@@ -1,4 +1,4 @@
-package com.hades.example.leankotlin
+package com.hades.example.leankotlin._0_others._entry_point
 
 // Since Kotlin 1.3, main without any params
 //fun main() {

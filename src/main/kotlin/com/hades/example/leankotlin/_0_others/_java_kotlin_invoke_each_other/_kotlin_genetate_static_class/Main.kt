@@ -1,6 +1,6 @@
-package com.hades.example.leankotlin._3_java_kotlin_invoke_each_other
+package com.hades.example.leankotlin._4_java_kotlin_invoke_each_other
 
-import com.hades.example.leankotlin._3_java_kotlin_invoke_each_other._3_1_kotlin_genetate_static_class.City
+import com.hades.example.leankotlin._0_others._java_kotlin_invoke_each_other._kotlin_genetate_static_class.City
 
 fun main() {
     // Kotlin 调用 Java
