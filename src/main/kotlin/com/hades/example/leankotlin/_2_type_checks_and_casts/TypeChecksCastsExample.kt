@@ -131,6 +131,6 @@ fun safe_cast() {
 
 // Generics type checks and casts,START
 fun generics_type_checks_and_casts() {
-    // TODO:  
+    // TODO:
 }
 // Generics type checks and casts,end
