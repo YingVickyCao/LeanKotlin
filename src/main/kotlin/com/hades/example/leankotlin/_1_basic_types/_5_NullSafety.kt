@@ -1,4 +1,4 @@
-package com.hades.example.leankotlin._1_types
+package com.hades.example.leankotlin._1_basic_types
 
 fun main() {
     // 3 空安全类型

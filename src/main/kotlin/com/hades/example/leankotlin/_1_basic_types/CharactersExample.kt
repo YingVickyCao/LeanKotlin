@@ -1,4 +1,4 @@
-package com.hades.example.leankotlin._1_types
+package com.hades.example.leankotlin._1_basic_types
 
 /**
  * https://kotlinlang.org/docs/characters.html
