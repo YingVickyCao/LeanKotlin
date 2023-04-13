@@ -2,13 +2,9 @@ package com.hades.example.leankotlin._3_control_flow
 
 fun main() {
     if_expression()
-    when_expresion()
-    for_loops()
-    while_loops()
-    break_in_loops()
-    continue_in_loops()
 }
 
+// If, START
 fun if_expression() {
     // Only if
     run {
@@ -78,25 +74,5 @@ fun if_expression() {
         }
         println(max) // 10
     }
-
 }
-
-//  similar to `Swith` in C-like language
-fun when_expresion() {
-}
-
-fun for_loops() {
-
-}
-
-fun while_loops() {
-
-}
-
-fun break_in_loops() {
-
-}
-
-fun continue_in_loops() {
-
-}
+// If, END
