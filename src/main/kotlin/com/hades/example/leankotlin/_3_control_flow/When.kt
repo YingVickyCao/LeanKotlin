@@ -89,6 +89,42 @@ fun when_expresion() {
         x = "prefix697544"
         println(hasPrefix(x))
     }
+
+    // when === if -else if chain
+    run {
+        val x = 4;
+        val y = 7;
+        when {
+            x % 2 == 0 -> println("x is odd")
+            y % 2 != 0 && y != 1 -> println("y is even")
+            else -> println("not odd nor event")
+        }
+
+        if (x % 2 == 0) {
+            println("x is odd")
+        } else if (y % 2 != 0 && y != 1) {
+            println("y is even")
+        } else {
+            println("not odd nor event")
+        }
+    }
+
+    // define a variable in when, then scope of this variable will be restricted to body of when
+    run {
+        var result = when (val x = 100) {
+            100 -> {
+                println("x is $x")
+                "Good"
+            }
+
+            80 -> "Well"
+            else -> "Bad"
+        }
+        println(result)
+
+        // Compile error : Reformat again to remove custom line breaks
+//        println(x)
+    }
 }
 
 fun when_demo(x: Any) {
