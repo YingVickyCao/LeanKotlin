@@ -6,4 +6,17 @@ fun main() {
 
 fun for_loops() {
 
+    // foreach
+    val ints = IntArray(3) {
+        it * 2
+    }
+    for (item in ints) print("  $item")
+    for (item in ints) { // body of for is a block
+        print("  $item")
+    }
+    for (item: Int in ints) { // body of for is a block
+        print("  $item")
+    }
+
+    // for ihas a member for
 }
