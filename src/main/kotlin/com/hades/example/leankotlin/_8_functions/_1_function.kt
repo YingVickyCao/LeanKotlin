@@ -1,4 +1,4 @@
-package com.hades.example.leankotlin._4_functions
+package com.hades.example.leankotlin._8_functions
 
 fun main() {
     println(double(3))  // 6s
