@@ -39,3 +39,20 @@ class Derived2 : Base {
     constructor(n: Int) : super(n)
     constructor(n: Int, name: String) : super(n)
 }
+
+// Example 4 : Overriding methods
+open class Shape {
+    open fun draw() {
+        println("Shape-draw")
+    }
+
+    fun fill() {
+        println("Shape-fill")
+    }
+}
+
+class Circle() : Shape() {
+    override fun draw() {
+        println("Circle-draw")
+    }
+}
