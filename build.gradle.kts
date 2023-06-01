@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     // https://kotlinlang.org/docs/jvm-get-started.html#run-the-application
-    kotlin("jvm") version "1.8.10"
+    kotlin("jvm") version "1.8.21"
     application
 }
 
@@ -15,6 +15,8 @@ repositories {
 
 dependencies {
     testImplementation(kotlin("test"))
+    // https://mvnrepository.com/artifact/javax.inject/javax.inject
+    implementation("javax.inject:javax.inject:1")
 }
 
 tasks.test {

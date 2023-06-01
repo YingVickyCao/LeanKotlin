@@ -1,4 +1,4 @@
-package com.hades.example.leankotlin._8_functions
+package com.hades.example.leankotlin._7_functions
 
 /**
  * Local function:function inside another function

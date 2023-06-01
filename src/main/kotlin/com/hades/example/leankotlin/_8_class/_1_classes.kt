@@ -1,5 +1,8 @@
-package com.hades.example.leankotlin._7_class
+package com.hades.example.leankotlin._8_class
 
+/**
+ * https://kotlinlang.org/docs/classes.html
+ */
 fun main() {
     // 2 constructor,START
     run {
@@ -106,7 +109,10 @@ class Pet {
 class Pet2(var name: String) {
     var age: Int = 0
 
-    constructor(name: String, age: Int) : this(name) { // secondary constructor directly delegates the primary constructor by "this(name)"
+    constructor(
+        name: String,
+        age: Int
+    ) : this(name) { // secondary constructor directly delegates the primary constructor by "this(name)"
         this.age = age
     }
 }

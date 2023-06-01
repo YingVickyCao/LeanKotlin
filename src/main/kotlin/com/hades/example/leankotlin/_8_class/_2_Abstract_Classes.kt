@@ -1,11 +1,12 @@
-package com.hades.example.leankotlin._7_class
+package com.hades.example.leankotlin._8_class
 
 /**
  * Abstract classes
+ * https://kotlinlang.org/docs/classes.html#abstract-classes
  */
 fun main() {
     run {
-        var p: Polygon = React()
+        var p: Polygon = Rect()
         p.draw()    // Draw React
 
         p.hi()  // Hi React
@@ -29,7 +30,7 @@ abstract class Polygon {
     }
 }
 
-class React : Polygon() {
+class Rect : Polygon() {
     override fun draw() {
         println("Draw React")
     }
