@@ -1,7 +1,5 @@
 package com.hades.example.leankotlin._8_class
 
-import com.hades.example.leankotlin._0_others._java_kotlin_invoke_each_other._anonymity_inner_class.Test
-import com.hades.example.leankotlin._3_control_flow.throwAnException
 import java.lang.AssertionError
 import javax.inject.Inject
 
@@ -9,10 +7,10 @@ import javax.inject.Inject
  * https://kotlinlang.org/docs/properties.html
  */
 fun main() {
-    _4_Properties().test()
+    PropertyExample().test()
 }
 
-class _4_Properties {
+class PropertyExample {
     fun test() {
 
         // Example 1 : Declaring properties
