@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     // https://kotlinlang.org/docs/jvm-get-started.html#run-the-application
-    kotlin("jvm") version "1.8.21"
+    kotlin("jvm") version "1.8.22"
     application
 }
 

@@ -10,70 +10,70 @@ private class DataClassExample {
     fun test() {
         // Example 1 : Data classes
         run {
-//            val user = User("Black Dog", 1)
-//            val user2 = User("Black Dog", 2)
-//            val user3 = User("Black Dog", 1)
-//            println(user.age)
-//            println(user.name)
-//
-//            // Example 1 : Data classes
-//            // The compiler automatically derives the following members from all properties declared in the primary constructor
-//            // equals()
-//            println(user.equals(user3))                             // true
-//            println(user == user3)                                  // true
-//            println(user === user3)                                 // falseåååååååååååååå
-//            println(user.equals(user2))                             // false
-//
-//            // hashCode()
-//            println(user.hashCode())                                // 295893510
-//            println(user3.hashCode())                               // 295893510
-//            println(user2.hashCode())                               // 295893511
-//            println("Black Dog".hashCode())                         // -960286373
-//
-//            // toString()
-//            println(user.toString())                                // User(name=Black Dog, age=1)
-//
-//            // componentN()
-//            println(user.component1())                              // Black Dog
-//            println(user.component2())                              // 1
-//
-//            // copy() => fun copy(name: String = this.name, age: Int = this.age) = User(name, age)
-//            val newUser = user.copy(age = 2)
-//            println(newUser.toString())                             // User(name=Black Dog, age=2)
-//            val newUser3 = user.copy()
-//            println(newUser3.toString())                            // User(name=Black Dog, age=1)
+            val user = User("Black Dog", 1)
+            val user2 = User("Black Dog", 2)
+            val user3 = User("Black Dog", 1)
+            println(user.age)
+            println(user.name)
+
+            // Example 1 : Data classes
+            // The compiler automatically derives the following members from all properties declared in the primary constructor
+            // equals()
+            println(user.equals(user3))                             // true
+            println(user == user3)                                  // true
+            println(user === user3)                                 // falseåååååååååååååå
+            println(user.equals(user2))                             // false
+
+            // hashCode()
+            println(user.hashCode())                                // 295893510
+            println(user3.hashCode())                               // 295893510
+            println(user2.hashCode())                               // 295893511
+            println("Black Dog".hashCode())                         // -960286373
+
+            // toString()
+            println(user.toString())                                // User(name=Black Dog, age=1)
+
+            // componentN()
+            println(user.component1())                              // Black Dog
+            println(user.component2())                              // 1
+
+            // copy() => fun copy(name: String = this.name, age: Int = this.age) = User(name, age)
+            val newUser = user.copy(age = 2)
+            println(newUser.toString())                             // User(name=Black Dog, age=2)
+            val newUser3 = user.copy()
+            println(newUser3.toString())                            // User(name=Black Dog, age=1)
         }
 
 
         // Example 2 : Properties declared in the class body
         run {
-//            val person1 = Person("Black dog")
-//            val person2 = Person("Black dog")
-//            person1.age = 10
-//            person2.age = 20
-//
-//
-//            println(person1.name)
-//            println(person1.age)
-//
-//            // toString
-//            println(person1.toString())             // Person(name=Black dog)
-//
-//            // equals()
-//            println(person1.equals(person2))        // true
-//
-//            // hashCode()
-//            println(person1.hashCode())             // -960255621
-//            println(person2.hashCode())             // -960255621
-//
-//            // toString()
-//            val newPerson = person1.copy()
-//            println(newPerson.toString())           // Person(name=Black dog)
-//            val newPerson2 = person1.copy("White Cat")
-//            println(newPerson2.toString())          // Person(name=White Cat)
-//
-//            // componentN()
-//            println(person1.component1())           //  Black dog
+            val person1 = Person("Black dog")
+            val person2 = Person("Black dog")
+            person1.age = 10
+            person2.age = 20
+
+
+            println(person1.name)
+            println(person1.age)
+
+            // toString
+            println(person1.toString())             // Person(name=Black dog)
+
+            // equals()
+            println(person1.equals(person2))        // true
+
+            // hashCode()
+            println(person1.hashCode())             // -960255621
+            println(person2.hashCode())             // -960255621
+
+            // toString()
+            val newPerson = person1.copy()
+            println(newPerson.toString())           // Person(name=Black dog)
+            val newPerson2 = person1.copy("White Cat")
+            println(newPerson2.toString())          // Person(name=White Cat)
+
+            // componentN()
+            println(person1.component1())           //  Black dog
         }
 
         // Example 3 : Copying
@@ -151,7 +151,6 @@ private class DataClassExample {
         println(triple.first)
         println(triple.second)
         println(triple.third)
-
         // named data classes are a better design choice  because more readable.
     }
 
