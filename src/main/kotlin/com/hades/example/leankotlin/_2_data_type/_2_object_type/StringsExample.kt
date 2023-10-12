@@ -1,4 +1,4 @@
-package com.hades.example.leankotlin._2_data_type
+package com.hades.example.leankotlin._2_data_type._2_object_type
 
 // String is immutable
 fun main() {

@@ -1,36 +1,10 @@
-package com.hades.example.leankotlin._2_data_type._2_type_checks_and_casts
+package com.hades.example.leankotlin._2_data_type._3_type_checks_and_casts
 
 fun main() {
-//    checkType()
 //    smartCasts()
     unsafe_cast()
     safe_cast()
 }
-
-// Check type,START
-/**
- * is
- * !is
- */
-fun checkType() {
-    run {
-        val obj = "a123"
-        if (obj is String) {
-            println("string")   // invoked
-        }
-    }
-    run {
-        val obj = "a123"
-//        if (obj !is String) {
-        // or
-        if (!(obj is String)) {
-            println("not string")
-        } else {
-            println(obj.length) // 4
-        }
-    }
-}
-// Check type,END
 
 // Smart Cast, START
 fun smartCasts() {
@@ -53,6 +27,7 @@ fun smartCasts() {
     demo5(x2)
 }
 
+// Smart Cast, START
 fun demo1(x: Any) {
     if (x is String) { // [is ]x is auto cast to a String
         println(x.length)
@@ -65,6 +40,9 @@ fun demo2(x: Any) {
     }
 
     println(x.length) //  [!is ] x is auto cast to a String
+
+    // In most cases, you don't need to use explicit cast operators in Kotlin because the compiler tracks the is-checks and explicit casts for immutable values and inserts (safe) casts automatically when necessary:
+    val l = 1L + 3 // Long + Int => Long
 }
 
 fun demo3(x: Any) {
@@ -129,8 +107,9 @@ fun safe_cast() {
 
 // Safe cast,END
 
-// Generics type checks and casts,START
-fun generics_type_checks_and_casts() {
+// Generics type casts,START
+fun generics_type_casts() {
     // TODO:
 }
-// Generics type checks and casts,end
+// Generics type casts,end
+

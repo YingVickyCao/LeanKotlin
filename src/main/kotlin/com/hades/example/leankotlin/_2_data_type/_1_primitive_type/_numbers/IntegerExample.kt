@@ -1,4 +1,4 @@
-package com.hades.example.leankotlin._2_data_type
+package com.hades.example.leankotlin._2_data_type._1_primitive_type._numbers
 
 fun main() {
     /**
@@ -19,7 +19,6 @@ fun main() {
     // Literal constants for numbers - integral values
     run {
         println(123)  // int is Decimals
-        println(123L)   // Long
         println(0x0F)   // int is Hexadecimals
         println(0b00001011)   // int is binary
         // Octal literals are not supported in Kotlin.
