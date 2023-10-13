@@ -1,4 +1,4 @@
-package com.hades.example.leankotlin._2_data_type._3_type_checks_and_casts
+package com.hades.example.leankotlin._2_data_type._4_type_checks_and_casts
 
 fun main() {
     // 3 空安全类型

@@ -9,16 +9,22 @@ fun main() {
         // Nullable numbers (Int? or generics ) is boxed in Java classes Integer,  Double and so on.
 
         // All nullable references to a are actually the same object because of the memory optimization that JVM applies to Integers between -128 and 127. It doesn't apply to the b references, so they are different objects.
+
+        // Kotlin 中，判断值相等，用==, 等价于 java equal()
+        // Kotlin 中，判断对象相等，用===, 等价于 java ==
+
+
         val a: Int = 100
         val boxedA: Int? = a
         val anotherBoxedA: Int? = a
+        println(boxedA == anotherBoxedA)    // true
         println(boxedA === anotherBoxedA)    // true
 
         val b: Int = 10000
         val boxedB: Int? = b
         val anotherBoxedB: Int? = b
-        println(boxedB === anotherBoxedB)    // false
         println(boxedB == anotherBoxedB)     // true
+        println(boxedB === anotherBoxedB)    // false
 
         /**
          * 结论：

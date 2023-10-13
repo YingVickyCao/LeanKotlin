@@ -1,6 +1,5 @@
 package com.hades.example.leankotlin._8_class
 
-import com.hades.example.leankotlin._3_control_flow.for_loops
 import java.util.function.BinaryOperator
 import java.util.function.IntBinaryOperator
 

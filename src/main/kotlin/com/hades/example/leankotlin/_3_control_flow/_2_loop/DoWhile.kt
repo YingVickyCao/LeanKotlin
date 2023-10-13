@@ -1,4 +1,4 @@
-package com.hades.example.leankotlin._3_control_flow
+package com.hades.example.leankotlin._3_control_flow._2_loop
 
 fun main() {
     run {
