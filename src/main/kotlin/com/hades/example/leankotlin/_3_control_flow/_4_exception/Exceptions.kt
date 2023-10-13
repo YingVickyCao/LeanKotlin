@@ -1,4 +1,4 @@
-package com.hades.example.leankotlin._4_exception
+package com.hades.example.leankotlin._3_control_flow._4_exception
 
 import java.lang.IllegalArgumentException
 

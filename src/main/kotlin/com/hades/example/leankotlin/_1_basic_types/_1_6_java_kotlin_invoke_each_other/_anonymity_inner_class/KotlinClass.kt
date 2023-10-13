@@ -1,4 +1,4 @@
-package com.hades.example.leankotlin._1_basic_types._1_5_java_kotlin_invoke_each_other._anonymity_inner_class
+package com.hades.example.leankotlin._1_basic_types._1_6_java_kotlin_invoke_each_other._anonymity_inner_class
 
 // 匿名内部类： 单例模式
 object Test {
