@@ -1,4 +1,4 @@
-package com.hades.example.leankotlin._8_class._5_extension
+package com.hades.example.leankotlin._4_class_and_object._5_extension
 
 // https://kotlinlang.org/docs/extensions.html
 fun main() {

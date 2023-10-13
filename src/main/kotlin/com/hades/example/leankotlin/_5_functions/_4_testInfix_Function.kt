@@ -1,4 +1,4 @@
-package com.hades.example.leankotlin._7_functions
+package com.hades.example.leankotlin._5_functions
 
 /**
  * Infix functions:

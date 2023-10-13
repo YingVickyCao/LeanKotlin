@@ -1,4 +1,4 @@
-package com.hades.example.leankotlin._8_class
+package com.hades.example.leankotlin._4_class_and_object
 
 import java.lang.AssertionError
 import javax.inject.Inject

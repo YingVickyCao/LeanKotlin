@@ -1,4 +1,4 @@
-package com.hades.example.leankotlin._9_interface
+package com.hades.example.leankotlin._4_class_and_object._9_interface
 
 // https://kotlinlang.org/docs/interfaces.html
 fun main() {

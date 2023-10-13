@@ -1,4 +1,4 @@
-package com.hades.example.leankotlin._8_class
+package com.hades.example.leankotlin._4_class_and_object
 
 import java.util.function.BinaryOperator
 import java.util.function.IntBinaryOperator

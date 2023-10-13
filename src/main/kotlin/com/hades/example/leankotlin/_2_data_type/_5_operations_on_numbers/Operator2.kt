@@ -1,4 +1,4 @@
-package com.hades.example.leankotlin._10_operations
+package com.hades.example.leankotlin._2_data_type._5_operations_on_numbers
 
 fun main() {
     val example: ElvisOperator = ElvisOperator()
