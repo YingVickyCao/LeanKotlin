@@ -20,6 +20,7 @@ class Rectangle : Polygon() {
 
 
 // You can override a non-abstract open member with an abstract one.
+//  open关键字 表示这个class 或 functions 可以被override
 open class Shape {
     open fun draw() {
         println("draw")
