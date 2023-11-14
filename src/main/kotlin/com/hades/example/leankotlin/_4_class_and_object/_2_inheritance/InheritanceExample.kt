@@ -23,6 +23,30 @@ fun main() {
     val circle = Circle();
     circle.draw()
     circle.fill()
+
+    // Example 5 : Overriding properties
+    val shape3 = Shape3()
+    println(shape3.vertexCount) // 4
+    val rectangle3 = Rectangle3()
+    println(rectangle3.vertexCount) // 10
+
+    val rectangle4 = Rectangle4(20)
+    println(rectangle4.vertexCount) // 20
+
+    val polygon4 = Polygon4();
+    println(polygon4.vertexCount)   // 5
+    polygon4.vertexCount = 100
+    println(polygon4.vertexCount) // 100
+
+    // Example 6 : Derived class initialization order
+//    val base2 = Base2("hi", 5);
+//    println(base2.name)
+//    println(base2.size)
+
+    val derived3 = Derived3("cat", "red", 20)
+    println(derived3.name)
+    println(derived3.size)
+    println(derived3.lastName)
 }
 
 /**
@@ -115,4 +139,112 @@ class RedRectangle() : Rectangle() {
 
 /**
  * Example 5 : Overriding properties
+ */
+
+
+open class Shape3 {
+    open val vertexCount: Int = 4
+}
+
+class Rectangle3 : Shape3() {
+    // 使用 override 来 override superclass class 的 val Properties。
+    // 必须是compatible type
+
+    // Way 1 : declared property can be overridden by a property with an initializer
+//    override val vertexCount: Int = 10
+
+    // Way 2 : declared property can be overridden by a property with a get method
+    override val vertexCount: Int
+        get() = 10
+}
+
+interface Shape4 {
+    val vertexCount: Int
+}
+
+// Way 3 : you can use the override keyword as part of the property declaration in a primary constructor
+class Rectangle4(override val vertexCount: Int = 4) : Shape4 {
+
+}
+
+// Way 4 : You can also override a val property with a var property, but not vice versa.
+// 使用var override superclass class 的 a val property，会增加一个set 方法
+class Polygon4 : Shape4 {
+    override var vertexCount: Int = 5
+}
+
+/**
+ * Example 6 : Derived class initialization order
+ *
+ */
+
+/*
+初始化顺序：
+Init a base class
+Init size in the base class:2
+Init a base class part 2
+
+Primary constructor -> {Initializer blocks and Property initializers according to  defined order } -> Secondary constructors
+ */
+open class Base2(var name: String) { // 1
+    init {
+        println("Init a base class part 1. name is $name") // 2
+    }
+
+    open var size: Int = name.length.also { // 3
+        println("Init size in the base class:$it")
+    }
+
+    constructor(name: String, size: Int) : this(name) { // 5
+        this.size = size
+        println("Init the secondary of a base class")
+    }
+
+    init { // 4
+        println("Init a base class part 2")
+    }
+}
+
+/*
+初始化顺序：
+Argument for the base class: Cat
+Init a base class part 1. name is Cat
+Init size in the base class:3
+Init a base class part 2
+Init a derived class part 1
+Int size in the derived class:6
+Init a derived class part 2
+Init the secondary of a derived class
+
+
+base class - Primary constructor
+-> base class - {Initializer blocks and Property initializers according to  defined order }
+-> base class - Secondary constructors
+
+derived class - Primary constructor
+-> derived class - {Initializer blocks and Property initializers according to  defined order }
+-> derived class - Secondary constructors
+
+ */
+class Derived3(name: String, val lastName: String) : Base2(name.replaceFirstChar { it.uppercase() }.also { println("Argument for the base class: $it") }) {
+    constructor(name: String, lastName: String, size: Int) : this(name, lastName) { // 5
+        this.size = size
+        println("Init the secondary of a derived class")
+    }
+
+    init {
+        println("Init a derived class part 1")
+    }
+
+    override var size: Int = (super.size + lastName.length).also {
+        println("Int size in the derived class:$it")
+    }
+
+    init {
+        println("Init a derived class part 2")
+    }
+}
+
+/**
+ * Example 7 : Calling the superclass implementation
  */
