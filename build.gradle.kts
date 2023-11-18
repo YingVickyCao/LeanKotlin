@@ -10,6 +10,21 @@ group = "com.hades.example.leankotlin"
 version = "1.0-SNAPSHOT"
 
 repositories {
+    maven {
+        url = uri("https://maven.aliyun.com/repository/gradle-plugin")
+    }
+    maven {
+        url = uri("https://repo.nju.edu.cn/repository/maven-public")
+    }
+    maven {
+        url = uri("https://maven.aliyun.com/repository/google")
+    }
+    maven {
+        url = uri("https://maven.aliyun.com/repository/central")
+    }
+    maven {
+        url = uri("https://maven.aliyun.com/repository/public")
+    }
     mavenCentral()
 }
 
@@ -24,7 +39,7 @@ tasks.test {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.jvmTarget = "11"
 }
 
 //application {

@@ -1,5 +1,6 @@
 package com.hades.example.leankotlin._4_class_and_object._2_inheritance
 
+// https://kotlinlang.org/docs/inheritance.html
 fun main() {
     // Example 1 : Implicitly inherits from Any
     val example = Example();
@@ -47,6 +48,22 @@ fun main() {
     println(derived3.name)
     println(derived3.size)
     println(derived3.lastName)
+
+    // Example 7 : Calling the superclass implementation
+    val rectangle2 = Rectangle2()
+    println(rectangle2.borderColor)
+    rectangle2.draw()
+
+    val filledRectangle = FilledRectangle()
+    println(filledRectangle.borderColor)    // black
+    println(filledRectangle.fillColor)  // black
+    filledRectangle.draw()
+
+    filledRectangle.drawAndFill()
+
+    //  Example 8 : Overriding rules
+    val square = Square()
+    square.draw()
 }
 
 /**
@@ -248,3 +265,73 @@ class Derived3(name: String, val lastName: String) : Base2(name.replaceFirstChar
 /**
  * Example 7 : Calling the superclass implementation
  */
+
+open class Rectangle2 {
+
+    open fun draw() {
+        println("draw in Rectangle")
+    }
+
+    val borderColor: String get() = "black"
+//    val borderColor: String
+//        get() {
+//            return "black"
+//        }
+}
+
+class FilledRectangle : Rectangle2() {
+    override fun draw() {
+        //  使用super 调用super class的方法
+        super.draw()
+        println("draw in FilledRectangle")
+    }
+
+    //  使用super 调用super class的field
+    val fillColor: String get() = super.borderColor
+
+    fun drawAndFill() {
+        val filler = Filler()
+        filler.drawAndFill()
+    }
+
+    inner class Filler {
+        private fun fill() {
+            println("fill")
+        }
+
+        fun drawAndFill() {
+            // 调用Rectangle2的draw()方法
+            super@FilledRectangle.draw()
+            fill()
+            // 调用外部类的superclass implementation ? `super@Outer`
+            // Uses Rectangle2's implementation of borderColor's get(
+            println("Drawn a filled rectangle with color ${super@FilledRectangle.borderColor}")
+        }
+    }
+}
+
+
+/**
+ * Example 8 : Overriding rules
+ *
+ */
+
+open class Rectangle5 {
+    open fun draw() {
+        println("Rectangle5 - draw")
+    }
+}
+
+interface Polygon {
+    fun draw() { // interface members are 'open' by default
+        println("Polygon - draw")
+    }
+}
+
+class Square() : Rectangle5(), Polygon {
+    override fun draw() {
+        // 当 class 继承了多个实现时，用super<Base>指定 supertype name
+        super<Rectangle5>.draw()
+        super<Polygon>.draw()
+    }
+}
