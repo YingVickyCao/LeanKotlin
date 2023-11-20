@@ -1,5 +1,6 @@
 package com.hades.example.leankotlin._4_class_and_object._4_interface
 
+// https://kotlinlang.org/docs/interfaces.html
 fun main() {
     /**
      * Example 1 : Implementing interfaces
