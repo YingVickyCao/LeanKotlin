@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     // https://kotlinlang.org/docs/jvm-get-started.html#run-the-application
-    kotlin("jvm") version "1.8.22"
+    kotlin("jvm") version "1.9.20"
     application
 }
 
@@ -24,6 +24,12 @@ repositories {
     }
     maven {
         url = uri("https://maven.aliyun.com/repository/public")
+    }
+    maven {
+        url = uri("https://mirrors.cloud.tencent.com/nexus/repository/maven-public")
+    }
+    maven {
+        url = uri("https://www.jitpack.io")
     }
     mavenCentral()
 }
