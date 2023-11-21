@@ -1,0 +1,1 @@
+package com.hades.example.leankotlin._4_class_and_object._13_inline_value_classes
