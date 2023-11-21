@@ -65,7 +65,8 @@ fun main() {
 //    println("The fist color is ${RGB.valueOf("XYZ")}") // ERROR:Exception in thread "main" java.lang.IllegalArgumentException: No enum constant com.hades.example.leankotlin._4_class_and_object._12_enum_classes.RGB.XYZ
 
         // In Kotlin 1.9.0, the entries property is introduced as a replacement for the values() function.
-        for (color in RGB.entries) println(color.toString())
+        // TODO:  enum entries property
+//        for (color in RGB.entries) println(color.toString())
 
         // Print enum constant properties: name and ordinal
         println(RGB.RED.name)       // RED
