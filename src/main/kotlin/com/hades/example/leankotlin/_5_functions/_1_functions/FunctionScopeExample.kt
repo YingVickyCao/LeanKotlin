@@ -2,7 +2,6 @@ package com.hades.example.leankotlin._5_functions._1_functions
 
 // https://kotlinlang.org/docs/functions.html#function-scope
 fun main() {
-
 }
 
 /**
