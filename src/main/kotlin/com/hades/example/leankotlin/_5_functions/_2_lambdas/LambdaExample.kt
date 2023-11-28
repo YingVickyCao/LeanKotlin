@@ -84,6 +84,17 @@ fun main() {
      * Example 3 : Function types - Invoking a function type instance
      */
     // 函数类型实例调用
+    run {
+        // TODO: String::plus
+        val stringPlus: (String, String) -> String = String::plus
+        val intPlus: Int.(Int) -> Int = Int::plus
+
+        println(stringPlus.invoke("<", ">"))    // <>
+        println(stringPlus("<", ">"))           // <>
+
+        println(intPlus.invoke(1, 1))          // 2
+        println(intPlus(1, 1))                 // 2
+    }
 
 
     /**
@@ -208,28 +219,43 @@ val a = { i: Int -> i + 1 } // （Int）-> Int
 /**
  * Example 3 : Function types - Invoking a function type instance
  */
-
+// 函数类型的值，可以通过invoke(...)操作符调用。 f.invoke(x) 或直接f(x)
+// 如果该值具有接收者类型，那么应该将接收者对象作为第一个参数传递。 调用带有接收者的函数类型值的另一个方式是在其前面加上接收者对象， 就好比该值是一个扩展函数：1.foo(2)。
 
 /**
  * Example 3 : Function types - Inline functions
  */
+// Ref : https://book.kotlincn.net/text/inline-functions.html
+// Ref : https://kotlinlang.org/docs/inline-functions.html#instantiating-a-function-type
+
 
 /**
  * Example 4 : Lambda expressions and anonymous functions
  */
+// lambda 表达式与匿名函数是函数字面值，函数字面值即没有声明而是立即做为表达式传递的函数
+// e.g.,  max(strings, { a, b -> a.length < b.length })
+// 函数 max 是一个高阶函数，因为它接受一个函数作为第二个参数。 其第二个参数是一个表达式，它本身是一个函数，称为函数字面值，它等价于以下具名函数：
+//fun compare(a: String, b: String): Boolean = a.length < b.length
 
 /**
  * Example 4 : Lambda expressions and anonymous functions - Lambda expression syntax
  *
  */
+val sum: (Int, Int) -> Int = { x: Int, y: Int -> x + y }
+// Lambda
+// 函数体跟在{}后面
+//
+
 
 /**
  * Example 4 : Lambda expressions and anonymous functions - Passing trailing lambdas
  */
 
+
 /**
  * Example 4 : Lambda expressions and anonymous functions - it: implicit name of a single parameter
  */
+
 
 /**
  * Example 4 : Lambda expressions and anonymous functions - Returning a value from a lambda expression
