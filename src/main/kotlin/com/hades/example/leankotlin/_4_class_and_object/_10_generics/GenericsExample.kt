@@ -404,7 +404,7 @@ abstract class SomeClass<T> {
     abstract fun execute(): T
 }
 
-object Runner {
+internal object Runner {
     inline fun <reified S : SomeClass<T>, T> run(): T {
         return S::class.java.getDeclaredConstructor().newInstance().execute()
     }

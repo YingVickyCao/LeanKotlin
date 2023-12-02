@@ -111,22 +111,22 @@ fun main() {
 /**
  * Example 1 :Data classes 自带func
  */
-data class User(val name: String, val age: Int)
+internal data class User(val name: String, val age: Int)
 
-data class User2(val name: String, val age: Int) {
+internal data class User2(val name: String, val age: Int) {
     override fun hashCode(): Int {
         return 100
     }
 }
 
 // On the JVM, if the generated class needs to have a parameterless constructor, default values for the properties have to be specified (see Constructors).
-data class User3(val name: String = "", val age: Int = 0)
+internal data class User3(val name: String = "", val age: Int = 0)
 
 /**
  * Example 2 : Properties declared in the class body
  */
 // The compiler only uses the properties defined inside the primary constructor for the automatically generated functions. To exclude a property from the generated implementations, declare it inside the class body:
-data class Person(val name: String) {
+internal data class Person(val name: String) {
     var age: Int = 0
 }
 
