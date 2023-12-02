@@ -1,5 +1,7 @@
 package com.hades.example.leankotlin._4_class_and_object._10_generics
 
+// https://book.kotlincn.net/text/generics.html
+// https://kotlinlang.org/docs/generics.html
 // https://www.jianshu.com/p/c5ef8b30d768
 fun main() {
     /**
