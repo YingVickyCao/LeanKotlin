@@ -56,7 +56,7 @@ object DefaultListener : MouseAdapter() {
 object MyObject
 
 // a data object declares a singleton
-// 打印 a plain data object declaration，得到是一个string
+// 打印 a data object declaration，得到是一个string
 // compiler自动生成方法：toString()、equals()/hashCode() pair，其后者不能自定义
 data object MyDataObject {
     var x: Int = 3
