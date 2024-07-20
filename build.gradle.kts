@@ -1,9 +1,6 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     // https://kotlinlang.org/docs/jvm-get-started.html#run-the-application
-    kotlin("jvm") version "1.9.20"
-    application
+     kotlin("jvm") version "2.0.0"
 }
 
 group = "com.hades.example.leankotlin"
@@ -43,16 +40,6 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
 }
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "11"
+kotlin {
+    jvmToolchain(17)
 }
-
-val compileKotlin: KotlinCompile by tasks
-compileKotlin.kotlinOptions {
-    languageVersion = "1.9"
-}
-
-//application {
-//    mainClass.set("MainKt")
-//}

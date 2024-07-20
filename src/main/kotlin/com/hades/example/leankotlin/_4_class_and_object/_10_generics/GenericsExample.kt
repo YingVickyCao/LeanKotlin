@@ -3,6 +3,9 @@ package com.hades.example.leankotlin._4_class_and_object._10_generics
 // https://book.kotlincn.net/text/generics.html
 // https://kotlinlang.org/docs/generics.html
 // https://www.jianshu.com/p/c5ef8b30d768
+
+// out 等价于Java `上界 <? extends T>`
+// in 等价于Java 下界 <? super T>
 fun main() {
     /**
      * Example 1 : Generics: in, out, where
