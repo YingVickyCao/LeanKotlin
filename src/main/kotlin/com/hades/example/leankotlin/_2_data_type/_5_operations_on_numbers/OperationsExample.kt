@@ -2,6 +2,7 @@ package com.hades.example.leankotlin._2_data_type._5_operations_on_numbers
 
 // Operations on numbers
 fun main() {
+    // 算术运算符
     run {
         println(1 + 3)    // 4
         println(1 / 3)    // 0

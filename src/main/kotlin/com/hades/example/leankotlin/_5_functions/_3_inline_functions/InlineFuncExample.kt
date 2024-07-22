@@ -1,19 +1,17 @@
 package com.hades.example.leankotlin._5_functions._3_inline_functions
 
-import com.hades.example.leankotlin._4_class_and_object._13_inline_value_classes.asNullable
-
 // 内联函数
 // https://book.kotlincn.net/text/inline-functions.html
 // https://kotlinlang.org/docs/inline-functions.html
 
 
 fun main() {
-    example1()
-    example2()
+//    example1()
+//    example2()
     example3()
-    example4()
-    example5()
-    example6()
+//    example4()
+//    example5()
+//    example6()
 }
 // 使用高阶函数会带来一些运行时的效率损失：每一个函数都是一个对象，并且会捕获一个闭包。 闭包那些在函数体内会访问到的变量的作用域。 内存分配（对于函数对象和类）和虚拟调用会引入运行时间开销。
 // 但是在许多情况下通过内联化 lambda 表达式可以消除这类的开销。
@@ -53,30 +51,43 @@ fun example1() {
  * Example 2 : noinline
  */
 // 用noinline 标记不希望内联的函数参数
-
-inline fun foo(inlined: () -> Unit, noinline notInlined: () -> Unit) {
+inline fun foo(inlinedFunc: () -> Unit, noinline notInlinedFunc: () -> Unit) {
 
 }
 
-//fun multiply(inlined: (Int, Int) -> Int):Int{
-//
-//}
+fun multiply(n1: Int, n2: Int, inlined: (Int, Int) -> Int): Int {
+    return inlined.invoke(n1, n2)
+}
 
 fun example2() {
-    // 12
-    val num1 = 2;
-    val num2 = 3
-//     multiply({ num1, num2 ->
-//        println("start,$num1,$num2")
-//        num1 + num2
-//    })
+    val result = multiply(2, 3, inlined = { n1, n2 ->
+        n1 * n2
+//        return@multiply n1 * n2
+    })
+    println("multiply result=$result")
 }
 
 /**
  * Example 3 : Non-local returns
  */
 fun example3() {
+    // A bare return is forbidden inside a lambda because a lambda cannot make the enclosing function return
+    fun multiply2(n1: Int, n2: Int, callback: (Int, Int) -> Int): Int {
+        return callback.invoke(n1, n2)
+    }
 
+    val result = multiply2(2, 3, callback = { n1, n2 ->
+        n1 * n2
+        // cannot return
+    })
+    println("multiply result=$result")
+
+    // But if the function the lambda is passed to is inlined, the return can be inlined
+    val result2 = multiply(2, 3, inlined = { n1, n2 ->
+//        n1 * n2 // ok
+        return@multiply n1 * n2 //ok
+    })
+    println("multiply result=$result2")
 }
 
 /**
@@ -89,13 +100,21 @@ fun example4() {
 /**
  * Example 5 : Inline properties
  */
-fun example5() {
+// The inline modifier can be used on accessors of properties that don't have backing fields.
+// inline accessors are inlined as regular inline functions
+class Foo
+class Stu {
+    val foo: Foo
+        inline get() = Foo() // annotate get property accessors as inline
+}
 
+fun example5() {
 }
 
 /**
  * Example 6 : Restrictions for public API inline functions
  */
 fun example6() {
-
+    // public API : public or protected : can be public API inline functions.
+    // non-public-API :private or internal
 }

@@ -170,7 +170,7 @@ private fun example3() {
     }) //Deprecated
     println("total=$total3") // log: total=9
 
-    // 方式2:用函数体外部来传递函数类型实参 (Recommended)
+    // 方式2:用函数体外部来传递函数类型实参
     val total4 = total(2, 3, 4) { /* 此处Int可以省略 */ it: Int, it2: Int -> it + it2 } // Recommended
     println("total=$total4") // log: total=9
 }
