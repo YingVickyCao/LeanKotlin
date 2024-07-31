@@ -5,6 +5,7 @@ import kotlin.test.*
 // https://kotlinlang.org/docs/operator-overloading.html#augmented-assignments
 // https://www.yiibai.com/kotlin/kotlin-operator.html
 // https://book.kotlincn.net/text/operator-overloading.html
+// https://juejin.cn/post/7087129138070290463
 // 操作符
 // 操作符重载
 class OperatorOverloadingExampleTest {
@@ -264,14 +265,60 @@ class OperatorOverloadingExampleTest {
     fun test_Indexed_access_operator() {
         val a = arrayOf(1, 2, 3)
         assertEquals(2, a[1])
-        assertEquals(2, a.get(1))
+        a[1] = 10
+        assertEquals(10, a[1])
+    }
+
+    @Test
+    fun test_Indexed_access_operator_Overloading() {
+        data class Points(val ints: Array<Int>) {
+            operator fun get(index: Int): Int {
+                return ints[index]
+            }
+
+            operator fun set(index: Int, value: Int) {
+                ints[index] = value
+            }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) return true
+                if (javaClass != other?.javaClass) return false
+
+                other as Points
+
+                return ints.contentEquals(other.ints)
+            }
+
+            override fun hashCode(): Int {
+                return ints.contentHashCode()
+            }
+        }
+
+        val a = Points(arrayOf(1, 2, 3))
+        assertEquals(2, a[1])
+        a[1] = 10
+        assertEquals(10, a[1])
     }
 
     /**
-     * invoke operator
+     * Binary operations - invoke operator
+     * 二元操作 - invoke 操作符
      */
     @Test
     fun test_invoke_operator() {
+        fun sum(n1: Int, n2: Int, callback: (Int, Int) -> Int): Int {
+            return callback.invoke(n1, n2)
+        }
+
+        val result = sum(1, 3, callback = { n1, n2 ->
+            n1 + n2
+        })
+        assertEquals(4, result)
+    }
+
+    @Test
+    fun test_invoke_operator_Overloading() {
+        // https://www.jianshu.com/p/947cda6e5e06
         data class Stu(val name: String, val age: Int) {
             operator fun invoke(): String { //  重载invoke运算符
                 return "$name - $age"
@@ -287,13 +334,24 @@ class OperatorOverloadingExampleTest {
         assertEquals("SY - 24", stu())  // 约定后带调用
         assertEquals(true, stu.invoke(20))  // 正常调用
         assertEquals(true, stu(20)) // 约定后带调用
+
+        class Sum {
+            operator fun invoke(n1: Int, n2: Int): Int {
+                return n1 + n2
+            }
+        }
+
+        val sum = Sum()
+        assertEquals(3, sum.invoke(1, 2)) // 正常调用
+        assertEquals(3, sum(1, 2)) // 约定后带调用
     }
 
     /**
-     * Augmented assignments
+     * Binary operations - Augmented assignments
+     * 二元操作 - 广义赋值
      */
     @Test
-    fun test_Augmented_assignments() {
+    fun test_AugmentedAssignments() {
         run {
             var a = 5
             val b = 10
@@ -334,34 +392,198 @@ class OperatorOverloadingExampleTest {
         }
     }
 
-    /**
-     * Equality and inequality operators
-     */
     @Test
-    fun test_Equality_and_inequality_operators() {
-        assertEquals(true, 5 == 5)
-        assertEquals(true, 5.equals(5))
+    fun test_AugmentedAssignments_Overloading() {
+        class IntValue(var n: Int) {
+            operator fun plusAssign(p: IntValue) {
+                n += p.n
+            }
 
-        assertEquals(true, 5 != 10)
-        assertEquals(true, !5.equals(10))
+            operator fun minusAssign(p: IntValue) {
+                n -= p.n
+            }
+
+            operator fun timesAssign(p: IntValue) {
+                n *= p.n
+            }
+
+            operator fun divAssign(p: IntValue) {
+                n /= p.n
+            }
+
+            operator fun remAssign(p: IntValue) {
+                n %= p.n
+            }
+        }
+        run {
+            val a = IntValue(5)
+            val b = IntValue(10)
+            a += b
+            assertEquals(15, a.n)
+
+            val c = IntValue(5)
+            val d = IntValue(10)
+            c.plusAssign(d)
+            assertEquals(15, c.n)
+        }
+        run {
+            val a = IntValue(5)
+            val b = IntValue(10)
+            a -= b
+            assertEquals(-5, a.n)
+
+            val c = IntValue(5)
+            val d = IntValue(10)
+            c.minusAssign(d)
+            assertEquals(-5, c.n)
+        }
+
+        run {
+            val a = IntValue(5)
+            val b = IntValue(10)
+            a *= b
+            assertEquals(50, a.n)
+
+            val c = IntValue(5)
+            val d = IntValue(10)
+            c.timesAssign(d)
+            assertEquals(50, c.n)
+        }
+
+        run {
+            val a = IntValue(11)
+            val b = IntValue(5)
+            a /= b
+            assertEquals(2, a.n)
+
+            val c = IntValue(11)
+            val d = IntValue(5)
+            c.divAssign(d)
+            assertEquals(2, c.n)
+        }
+
+        run {
+            val a = IntValue(11)
+            val b = IntValue(5)
+            a %= b
+            assertEquals(1, a.n)
+
+            val c = IntValue(11)
+            val d = IntValue(5)
+            c.remAssign(d)
+            assertEquals(1, c.n)
+        }
     }
 
-
     /**
-     * Comparison operators
+     * Binary operations - Equality and inequality operators
+     * 二元操作 - 相等与不等操作符
      */
     @Test
-    fun test_comparison_operators() {
-        assertEquals(true, 10 > 5)
-        assertEquals(true, 10.compareTo(5) > 0)
+    fun test_EqualityInequalityOperators() {
+        val n1 = 5
+        val n2 = 5
+        val n3 = 10
+        assertTrue(n1 == n2)
+        assertTrue(n1.equals(n2))
 
-        assertEquals(true, 5 < 10)
-        assertEquals(true, 5.compareTo(10) < 0)
+        assertFalse(n1 == n3)
+        assertFalse(n1.equals(n3))
 
-        assertEquals(true, 10 >= 5)
-        assertEquals(true, 10.compareTo(5) >= 0)
-
-        assertEquals(true, 5 <= 10)
-        assertEquals(true, 5.compareTo(10) <= 0)
+        assertEquals(true, n1 != n3)
+        assertEquals(true, !n1.equals(n3))
     }
+
+    @Test
+    fun test_EqualityInequalityOperators_Overloading() {
+        class Point(val x: Int) {
+            override operator fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                if (other !is Point) {
+                    return false
+                }
+                return x == other.x
+            }
+
+            override fun hashCode(): Int {
+                return 31 * x
+            }
+        }
+
+        val n1 = Point(5)
+        val n2 = Point(5)
+        val n3 = Point(10)
+        assertTrue(n1 == n2)
+        assertTrue(n1.equals(n2))
+
+        assertFalse(n1 == n3)
+        assertFalse(n1.equals(n3))
+
+        assertEquals(true, n1 != n3)
+        assertEquals(true, !n1.equals(n3))
+    }
+
+    /**
+     * Binary operations - Comparison operators
+     * 二元操作 - 比较操作符
+     */
+    @Test
+    fun test_ComparisonOperators() {
+        val n1 = 10
+        val n2 = 5
+        assertTrue(n1 > n2)
+        assertTrue(n1.compareTo(n2) > 0)
+
+        assertTrue(n2 < n1)
+        assertTrue(n2.compareTo(n1) < 0)
+
+        assertTrue(n1 >= n2)
+        assertTrue(n1.compareTo(n2) >= 0)
+
+        assertTrue(n2 <= n1)
+        assertTrue(n2.compareTo(n1) <= 0)
+    }
+
+    @Test
+    fun test_test_ComparisonOperators_Overloading() {
+        data class Point(val x: Int) {
+            operator fun compareTo(p: Point): Int {
+                return x.compareTo(p.x)
+            }
+        }
+
+        val n1 = Point(10)
+        val n2 = Point(5)
+        assertTrue(n1 > n2)
+        assertTrue(n1.compareTo(n2) > 0)
+
+        assertTrue(n2 < n1)
+        assertTrue(n2.compareTo(n1) < 0)
+
+        assertTrue(n1 >= n2)
+        assertTrue(n1.compareTo(n2) >= 0)
+
+        assertTrue(n2 <= n1)
+        assertTrue(n2.compareTo(n1) <= 0)
+    }
+
+    /**
+     * Binary operations - Property delegation operators
+     * 属性委托操作符
+     */
+    @Test
+    fun test_PropertyDelegationOperators() {
+        // TODO:Property delegation operators
+    }
+
+    @Test
+    fun test_PropertyDelegationOperators_Overloading() {
+        // TODO:Property delegation operators
+    }
+
+    // TODO: Infix calls for named functions
+
 }
