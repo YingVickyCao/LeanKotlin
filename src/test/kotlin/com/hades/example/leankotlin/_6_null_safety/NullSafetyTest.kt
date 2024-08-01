@@ -82,5 +82,37 @@ class NullSafetyTest {
         for (item in listWithNulls) {
             item?.let { println(it) }
         }
+
+        // A safe call can also be placed on the left side of an assignment.  if one of the receivers in the safe calls chain is null, the assignment is skipped and the expression on the right is not evaluated at all
+        // If either `person` or `person.department` is null, the function is not called:
+        val person = Employee(null)
+        person?.department?.head = Head("samsung")
+        assertNull(getName(person))
+    }
+
+    /**
+     * Nullable receiver
+     */
+    @Test
+    fun test4() {
+        // Extension functions can be defined on a nullable receiver. This way you can specify behaviour for null values without the need to use null-checking logic at each call-site.
+        data class Person(var name: String?)
+
+        val person: Person? = null
+        println(person.toString()) // person is null , does not throw an exception
+
+        //If you want your toString() invocation to return a nullable string, use the safe-call operator ?.
+        val name: String? = person?.toString()
+        if (null == name) {
+            // handle the case where name wa null
+        }
+    }
+
+    /**
+     * Elvis operator
+     */
+    @Test
+    fun test5() {
+
     }
 }
