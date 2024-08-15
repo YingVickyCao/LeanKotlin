@@ -1,6 +1,5 @@
 package com.hades.example.leankotlin._6_null_safety
 
-import com.hades.example.leankotlin._3_control_flow._2_loop.for_loops
 import kotlin.test.*
 
 class NullSafetyTest {

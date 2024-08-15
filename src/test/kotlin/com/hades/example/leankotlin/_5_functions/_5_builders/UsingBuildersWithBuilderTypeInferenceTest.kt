@@ -1,6 +1,5 @@
 package com.hades.example.leankotlin._5_functions._5_builders
 
-import java.lang.StringBuilder
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
