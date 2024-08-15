@@ -1,9 +1,7 @@
 package com.hades.example.leankotlin._6_null_safety
 
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
+import com.hades.example.leankotlin._3_control_flow._2_loop.for_loops
+import kotlin.test.*
 
 class NullSafetyTest {
     /**
@@ -113,6 +111,71 @@ class NullSafetyTest {
      */
     @Test
     fun test5() {
+        var b: String? = null
+        val length: Int = if (b != null) b.length else -1
+        assertEquals(-1, length)
 
+        // also express this with the Elvis operator ?:
+        val length2 = b?.length ?: -1 // if b?.length is not null, Elvis operator returns it, otherwise it returns the expression to the right.
+        assertEquals(-1, length2)
+
+        // throw and return can be used on the right-hand side of elvis operator
+        fun foo(node: Node): String? {
+            val parent = node.parent ?: return null
+            val name = node.name ?: return null
+            return "$parent:$name"
+        }
+
+        val result = foo(Node("a", "b"))
+        assertEquals("a:b", result)
+
+        val result2 = foo(Node("a", null))
+        assertEquals(null, result2)
+    }
+
+    data class Node(var parent: String?, var name: String?)
+
+    /**
+     * The !! operator
+     */
+    @Test
+    fun test6() {
+        val str: String? = null
+//        val l = str!!.length // java.lang.NullPointerException
+
+        val str2: String? = "abc"
+        val l2 = str2!!.length
+        assertEquals(3, l2)
+    }
+
+    /**
+     * Safe casts
+     */
+
+    @Test
+    fun test7() {
+        // use safe casts that return null if the clas type cast was not successful
+        val a: String? = "abc"
+        val aInt: Int? = a as? Int
+        assertEquals(null, aInt)
+
+        val b: Int = 5
+        val aInt2: Int? = b as? Int
+        assertEquals(5, aInt2)
+    }
+
+    /**
+     * Collections of a nullable type
+     */
+    @Test
+    fun test8() {
+        // want to filter non-nullable elements from a collection of elements of a nullable type
+        val nullableList: List<Int?> = listOf(1, 2, null, 4)
+        val intList: List<Int> = nullableList.filterNotNull()
+        assertEquals(listOf(1, 2, 4).toString(), intList.toString())
+
+        val nullableStringList: List<String?> = listOf("a", null, "", "d")
+        val stringList: List<String> = nullableStringList.filterNotNull()
+        assertEquals(listOf("a", "", "d").toString(), stringList.toString())
     }
 }
