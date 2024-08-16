@@ -1,9 +1,4 @@
-<<<<<<<< HEAD:src/test/kotlin/com/hades/example/leankotlin/concepts/_6_null_safety/NullSafetyTest.kt
 package com.hades.example.leankotlin.concepts._6_null_safety
-========
-package com.hades.example.leankotlin._6_null_safety
->>>>>>>> parent of 425f83e (refactor):src/test/kotlin/com/hades/example/leankotlin/_6_null_safety/NullSafetyTest.kt
-
 import kotlin.test.*
 
 class NullSafetyTest {

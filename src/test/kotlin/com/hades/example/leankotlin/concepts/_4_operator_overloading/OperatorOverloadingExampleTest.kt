@@ -1,9 +1,4 @@
-<<<<<<<< HEAD:src/test/kotlin/com/hades/example/leankotlin/concepts/_4_operator_overloading/OperatorOverloadingExampleTest.kt
 package com.hades.example.leankotlin.concepts._4_operator_overloading
-========
-package com.hades.example.leankotlin._5_functions._4_operator_overloading
->>>>>>>> parent of 425f83e (refactor):src/test/kotlin/com/hades/example/leankotlin/_5_functions/_4_operator_overloading/OperatorOverloadingExampleTest.kt
-
 import kotlin.test.*
 
 // https://kotlinlang.org/docs/operator-overloading.html#augmented-assignments

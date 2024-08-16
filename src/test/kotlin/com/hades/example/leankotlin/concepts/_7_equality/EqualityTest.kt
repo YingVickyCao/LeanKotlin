@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:src/test/kotlin/com/hades/example/leankotlin/concepts/_7_equality/EqualityTest.kt
 package com.hades.example.leankotlin.concepts._7_equality
-========
-package com.hades.example.leankotlin._7_equality
->>>>>>>> parent of 425f83e (refactor):src/test/kotlin/com/hades/example/leankotlin/_7_equality/EqualityTest.kt
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
