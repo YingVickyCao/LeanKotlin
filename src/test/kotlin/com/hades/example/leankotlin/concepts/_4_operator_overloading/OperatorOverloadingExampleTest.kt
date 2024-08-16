@@ -1,4 +1,4 @@
-package com.hades.example.leankotlin.concepts
+package com.hades.example.leankotlin.concepts._4_operator_overloading
 
 import kotlin.test.*
 

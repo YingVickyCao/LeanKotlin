@@ -1,4 +1,4 @@
-package com.hades.example.leankotlin.concepts
+package com.hades.example.leankotlin.concepts._5_builders
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
