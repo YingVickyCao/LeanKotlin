@@ -1,5 +1,3 @@
-package com.hades.example.leankotlin.basics
-
 /**
  * package:
  * package is not defined.
