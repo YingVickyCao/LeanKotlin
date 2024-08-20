@@ -22,7 +22,10 @@ fun main() {
 //    test8()
 //    test9()
 //    test10()
-    test11()
+//    test11()
+//    test12()
+//    test13()
+    test14()
 }
 
 /**
@@ -269,6 +272,124 @@ private fun test11() {
  * Collections
  */
 
+private fun test12() {
+    // Iterate over a collection
+    run {
+        val items = arrayOf(1, 3)
+        for (item in items) {
+            println(item)
+        }
+    }
+
+    // Check if a collection contains an object using in operator:
+    run {
+        val items = arrayOf("orange", "apple")
+        when {
+            "orange" in items -> println("juicy")
+            "apple" in items -> println("apple in fine too")
+        }
+    }
+
+    // Use lambda expressions to filter and map collections:
+    val fruits = listOf("banana", "avocado", "apple", "kiwifruit")
+    val filtered = mutableListOf<String>()
+    fruits.filter { it.startsWith("a") }
+        .sortedBy { it }
+        .map { it.uppercase() }
+        .forEach {
+            println(it)
+            filtered.add(it)
+        }
+    println(filtered)
+}
+
 /**
  * Nullable values and null checks
  */
+private fun test13() {
+    fun parseInt(str: String): Int? { // return nullable int
+        return try {
+            str.toInt()
+        } catch (ex: Exception) {
+            null
+        }
+    }
+
+    run {
+        fun printProduct(arg1: String, arg2: String) {
+            val x = parseInt(arg1)
+            val y = parseInt(arg2)
+            if (x != null && y != null) {
+                println(x * y)
+            } else {
+                println("$arg1 or $arg2 is not a number")
+            }
+        }
+        printProduct("2", "5")
+        printProduct("2", "abc")
+    }
+
+    // OR
+    run {
+        fun printProduct(arg1: String, arg2: String) {
+            val x = parseInt(arg1)
+            val y = parseInt(arg2)
+            if (x == null) {
+                println("Wrong number format in arg1:$arg1")
+                return
+            }
+            if (y == null) {
+                println("Wrong number format in arg2:$arg2")
+                return
+            }
+            println(x * y)
+        }
+
+        printProduct("2", "5")
+        printProduct("2", "abc")
+    }
+}
+
+/**
+ * Type checks and automatic casts
+ */
+private fun test14() {
+    // is
+    run {
+        fun getStringLength(obj: Any): Int? {
+            if (obj is String) {
+                // obj is automatically cast to String in this branch
+                return obj.length
+            }
+            // obj is still of type Any outside of the type-check branch
+            return null
+        }
+        println(getStringLength("abc"))
+        println(getStringLength(10))
+    }
+    // OR
+    run {
+        fun getStringLength(obj: Any): Int? {
+            if (obj !is String) {
+                return null
+            }
+            // obj is automatically cast to String in this branch
+            return obj.length
+        }
+        println(getStringLength("abc"))
+        println(getStringLength(10))
+    }
+
+    // OR
+    run {
+        fun getStringLength(obj: Any): Int? {
+            // obj is automatically cast to String on the right-hand side of &&
+            if (obj is String && obj.length > 0) {
+                return obj.length
+            }
+            return null
+        }
+        println(getStringLength("abc"))
+        println(getStringLength(10))
+    }
+}
