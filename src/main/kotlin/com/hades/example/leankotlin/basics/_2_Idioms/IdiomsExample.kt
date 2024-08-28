@@ -1,6 +1,8 @@
 package com.hades.example.leankotlin.basics._2_Idioms
 
 import com.hades.example.leankotlin.concepts._1_types._2_data_type._2_object_type.array
+import java.nio.file.Files
+import java.nio.file.Paths
 
 /**
  * Create DTOs
@@ -390,6 +392,9 @@ private fun test24() {
     }
 }
 
+/**
+ * if expression
+ */
 private fun test25() {
     val x = 2
     val y = if (x == 1) {
@@ -403,8 +408,105 @@ private fun test25() {
 }
 
 /**
- * if expression
+ * Builder-style usage of methods that return unit
  */
+private fun test26() {
+    fun arrayOfMinusOnes(size: Int): IntArray {
+        return IntArray(size).apply {
+            fill(-1)
+        }
+    }
+
+    val result: IntArray = arrayOfMinusOnes(3)
+    println(result.toString())
+}
+
+/**
+ * Single-expression functions
+ */
+private fun test27() {
+    run {
+        fun theAnswer() = 42
+    }
+    // Equivalent to
+    run {
+        fun theAnswer(): Int {
+            return 42
+        }
+    }
+
+    fun transform(color: String): Int = when (color) {
+        "Red" -> 0
+        "Green" -> 1
+        "Blue" -> 2
+        else -> throw IllegalArgumentException("Invalid color param value")
+    }
+    println(transform("Green")) // 1
+}
+
+/**
+ * Call multiple methods on an object instance(with)
+ */
+private fun test28() {
+    class Turtle {
+        fun penDown() {
+
+        }
+
+        fun penUp() {
+
+        }
+
+        fun turn(degrees: Double) {
+
+        }
+
+        fun forward(pixels: Double) {
+
+        }
+    }
+
+    val turtle = Turtle()
+    with(turtle) {
+        penDown()
+        for (i in 1..4) {
+            forward(100.0)
+            turn(90.0)
+        }
+        penUp()
+    }
+}
+
+/**
+ * Configure properties of an object(apply)
+ */
+private fun test29() {
+    class Rectangle {
+        var length: Int = -1
+        var breadth = -1
+        override fun toString(): String {
+            return "Rectangle(length=$length, breadth=$breadth)"
+        }
+
+
+    }
+
+    val myRectangle: Rectangle = Rectangle().apply {
+        length = 4
+        breadth = 5
+    }
+    println(myRectangle) // Rectangle(length=4, breadth=5)
+}
+
+/**
+ * Java 7's try-with-resources
+ */
+private fun test30() {
+    val stream = Files.newInputStream(Paths.get("1.txt"))
+    stream.buffered().reader().use {
+        reader -> println(reader.readText())
+    }
+}
 
 fun main() {
 //    test1()
@@ -431,5 +533,10 @@ fun main() {
 //    test22()
 //    test23()
 //    test24()
-    test25()
+//    test25()
+//    test26()
+//    test27()
+//    test28()
+//    test29()
+    test30()
 }
