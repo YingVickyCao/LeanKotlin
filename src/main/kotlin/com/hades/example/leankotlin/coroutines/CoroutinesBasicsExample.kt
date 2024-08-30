@@ -10,6 +10,7 @@ fun main() {
 //    test3()
 //    test4()
     test5()
+//    test6()
 }
 
 /**
@@ -161,4 +162,40 @@ private fun test5() {
         println("[6]thread name = " + Thread.currentThread().name + ",thread id = " + Thread.currentThread().id + "," + Date().toString())
     }
     println("[7]thread name = " + Thread.currentThread().name + ",thread id = " + Thread.currentThread().id + "," + Date().toString())
+}
+
+
+/**
+ * Coroutines are light-weight
+ */
+// Coroutines are less resource-intensive than JVM threads. Code that exhausts the JVM's available memory when using threads can be expressed using coroutines without hitting resource limits.
+private fun test6() {
+    testCoroutines()
+    testThreads()
+}
+
+private fun testCoroutines() {
+    println("[1]" + Date().toString())
+    runBlocking {
+        println("[2]" + Date().toString())
+        repeat(50_000) {// 50_000
+            launch {
+                delay(5000L) // 5000L
+                print(".")
+            }
+        }
+    }
+    println("\n")
+    println("[3]" + Date().toString())
+}
+
+private fun testThreads() {
+    println("[1]" + Date().toString())
+    repeat(50_000) {// 50_000
+        Thread(Runnable {
+            Thread.sleep(5000L) // 5000L
+            print(".")
+        })
+    }
+    println("[3]" + Date().toString())
 }
