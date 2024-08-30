@@ -1,7 +1,10 @@
-package com.hades.example.leankotlin.coroutines
+package com.hades.example.leankotlin.coroutines.CoroutineAndChannelsTutorial
 
 import kotlinx.coroutines.*
 
+/**
+ * https://kotlinlang.org/docs/coroutines-and-channels.html
+ */
 fun main() {
 //    deferred()
     deferredObjects()

@@ -1,4 +1,4 @@
-package com.hades.example.leankotlin.coroutines.channel
+package com.hades.example.leankotlin.coroutines.CoroutineAndChannelsTutorial.channel
 
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
