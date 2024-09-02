@@ -36,7 +36,7 @@ private fun test2() {
     test2_example2()
 }
 
-// job.cancelAndJoin() invoked, but still print sleeping,until the job completeds by itself after five iterations.
+// job.cancelAndJoin() invoked, but still print sleeping,until the job completed by itself after five iterations.
 private fun test2_example1() {
     println("---->")
     runBlocking {
