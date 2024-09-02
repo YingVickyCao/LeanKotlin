@@ -1,6 +1,7 @@
-package com.hades.example.leankotlin.coroutines.CoroutineAndChannelsTutorial
+package com.hades.example.leankotlin.coroutines
 
 import kotlinx.coroutines.*
+
 
 /**
  * Cancelling coroutine execution
@@ -284,8 +285,71 @@ private fun test6_v3() {
 /**
  * Asynchronous timeout and resources
  */
-private fun test7() {
+var acquired = 0
 
+class Resource {
+    init {
+        acquired++ // acquire the resource
+    }
+
+    fun close() {
+        acquired--  // release the resource
+    }
+}
+
+private fun test7() {
+//   test7_example1()
+    test7_example2()
+}
+
+
+private fun test7_example1() {
+    println("----->")
+    runBlocking {
+        println("runBlocking ----->")
+        repeat(10_000) { i ->  // launch 10k coroutines
+            launch {
+                // withTimeout is asynchronous with respect to the code running on its block and may happen at any time.
+                val resource = withTimeout(60) { //timeout of 60ms
+                    delay(50) // delay 50 ms
+                    Resource() // Acquire a resource and return it from withTimeout block
+                }
+                resource.close()
+            }
+        }
+        println("runBlocking <-----")
+    }
+    println("print  acquired")
+    // outside runBlocking all the coroutines have completed
+    // acquired != 0
+    println(acquired)   // print the number of resource still acquired.
+    println("<-----")
+}
+
+private fun test7_example2() {
+    println("----->")
+    runBlocking {
+        println("runBlocking ----->")
+        repeat(10_000) { i ->  // launch 10k coroutines
+            launch {
+                var resource: Resource? = null
+                try {
+                    withTimeout(60) { //timeout of 60ms
+                        delay(50) // delay 50 ms
+                        resource = Resource()
+                    }
+                } finally {
+                    resource?.close()
+                }
+            }
+        }
+        println("runBlocking <-----")
+    }
+    println("print  acquired")
+    // outside runBlocking all the coroutines have completed
+    // acquired = 0
+    println(acquired)   // print the number of resource still acquired.
+    println("<-----")
 }
 
 fun main() {
