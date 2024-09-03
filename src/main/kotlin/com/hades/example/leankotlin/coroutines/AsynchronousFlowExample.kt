@@ -2,6 +2,8 @@ package com.hades.example.leankotlin.coroutines
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+import javax.swing.text.FlowView.FlowStrategy
+import kotlin.system.measureTimeMillis
 
 // Asynchronous Flow
 //https://kotlinlang.org/docs/flow.html
@@ -352,8 +354,359 @@ private fun test8_2() {
  * Buffering
  */
 private fun test9() {
+    // Running different parts of a flow in different coroutines can be helpful from the standpoint of the overall time it takes to collect the flow, especially when long-running asynchronous operations are involved. F
+    fun simple(): Flow<Int> = flow<Int> {
+        log("simple:------->")
+        for (i in 1..3) {
+            log("waiting for $i")
+            delay(100) // pretend we are asynchronously waiting 100ms
+            log("Emitting $i")
+            emit(i)
+        }
+        log("simple:<-------")
+    }
+
+    runBlocking {
+        log("runBlocking ----------->")
+        val time = measureTimeMillis {
+            simple().collect { value ->
+                delay(300) // pretend we are processing it for 300ms
+                log("" + value)
+            } // collecting coroutine : [main @coroutine#1]
+        }
+        log("Collected in $time ms") // 1227 ms
+        log("runBlocking <-----------")
+    }
+}
+
+/**
+ * Buffering - Conflation
+ */
+private fun test9_1() {
+    // Conflation is one way to speed up processing when both the emitter and collector are slow. It does it by dropping emitted values.
+    // When a flow represents partial results of the operation or operation status updates, it may not be necessary to process each value, but instead, only most recent ones. In this case, the conflate operator can be used to skip intermediate values when a collector is too slow to process them.
+    fun simple(): Flow<Int> = flow<Int> {
+//        log("simple:------->")
+        for (i in 1..3) {
+//            log("waiting for $i")
+            delay(100) // pretend we are asynchronously waiting 100ms
+            log("Emitting $i")
+            emit(i)
+        }
+//        log("simple:<-------")
+    }
+
+    runBlocking {
+//        log("runBlocking ----------->")
+        val time = measureTimeMillis {
+            simple()
+                .conflate() // conflate emissions, don't process each one
+                .collect { value ->
+                    delay(300) // pretend we are processing it for 300ms
+                    log("" + value)
+                } // collecting coroutine : [main @coroutine#1]
+        }
+        log("Collected in $time ms") // 727 ms
+//        log("runBlocking <-----------")
+    }
+}
+
+/**
+ * Buffering - Processing the latest value
+ */
+private fun test9_2() {
+    // The other way is to cancel a slow collector and restart it every time a new value is emitted.
+    fun simple(): Flow<Int> = flow<Int> {
+//        log("simple:------->")
+        for (i in 1..3) {
+//            log("waiting for $i")
+            delay(100) // pretend we are asynchronously waiting 100ms
+            log("Emitting $i")
+            emit(i)
+        }
+//        log("simple:<-------")
+    }
+
+    runBlocking {
+//        log("runBlocking ----------->")
+        val time = measureTimeMillis {
+            simple()
+                .collectLatest { value -> // cancel & restart on the latest value
+                    delay(300) // pretend we are processing it for 300ms
+                    log("" + value)
+                } // collecting coroutine : [main @coroutine#1]
+        }
+        log("Collected in $time ms") // 671 ms
+//        log("runBlocking <-----------")
+    }
+}
+
+
+/**
+ * Composing multiple flows
+ */
+/**
+ * Composing multiple flows - Zip
+ */
+private fun test10_1() {
+//    test10_1_example1()
+    test10_1_example2()
+}
+
+private fun test10_1_example1() {
+    // flows have a zip operator that combines the corresponding values of two flows:
+    runBlocking {
+        val nums = (1..3).asFlow()
+        val strs = flowOf("one", "two", "three") // strings
+        nums.zip(strs) { a, b -> "$a -> $b" } // compose a single string
+            .collect { println(it) }
+    }
+}
+
+private fun test10_1_example2() {
+    runBlocking {
+        val nums = (1..3).asFlow().onEach { delay(300) }
+        val strs = flowOf("one", "two", "three").onEach { delay(400) }
+        val startTime = System.currentTimeMillis()
+        nums.zip(strs) { a, b -> "$a -> $b" } // compose a single string with zip
+            .collect { value ->
+                // Use zip:
+                // 1 -> one at 430 ms from start
+                // 2 -> two at 823 ms from start
+                // 3 -> three at 1233 ms from start
+                println("$value at ${System.currentTimeMillis() - startTime} ms from start")
+            }
+    }
+}
+
+/**
+ * Composing multiple flows - Combine
+ */
+private fun test10_2() {
+    runBlocking {
+        val nums = (1..3).asFlow().onEach { delay(300) }
+        val strs = flowOf("one", "two", "three").onEach { delay(400) }
+        val startTime = System.currentTimeMillis()
+        nums.combine(strs) { a, b -> "$a -> $b" } // compose a single string with combine
+            .collect { value ->
+                // combine:
+                // 1 -> one at 436 ms from start
+                //2 -> one at 629 ms from start
+                //2 -> two at 848 ms from start
+                //3 -> two at 934 ms from start
+                //3 -> three at 1250 ms from start
+                println("$value at ${System.currentTimeMillis() - startTime} ms from start")
+            }
+    }
+}
+
+/**
+ * Flattening flows
+ */
+
+private fun test11() {
+    runBlocking {
+        (1..3).asFlow()
+            .map { requestFlow(it) } // returns a flow of flows (Flow<Flow<String>>)
+            .collect { value ->
+                // kotlinx.coroutines.flow.SafeFlow@2471cca7 : 1 : First
+                //kotlinx.coroutines.flow.SafeFlow@2471cca7 : 1 : Second
+                //kotlinx.coroutines.flow.SafeFlow@3834d63f : 2 : First
+                //kotlinx.coroutines.flow.SafeFlow@3834d63f : 2 : Second
+                //kotlinx.coroutines.flow.SafeFlow@1ae369b7 : 3 : First
+                //kotlinx.coroutines.flow.SafeFlow@1ae369b7 : 3 : Second
+                value.collect {
+                    println("$value : $it")
+                }
+            }
+    }
+}
+
+/**
+ * Flattening flows - flatMapConcat
+ */
+private fun test11_1() {
+    // flatMapConcat - They are the most direct analogues of the corresponding sequence operators. They wait for the inner flow to complete before starting to collect the next one
+    runBlocking {
+        val startTime = System.currentTimeMillis()
+        (1..3).asFlow()
+            .onEach { delay(100) }
+            .flatMapConcat { requestFlow(it) } // returns a flow of flows (Flow<Flow<String>>)
+            .collect { value ->
+                // 1 : First at 122 ms from start.
+                //1 : Second at 630 ms from start.
+                //2 : First at 735 ms from start.
+                //2 : Second at 1239 ms from start.
+                //3 : First at 1343 ms from start.
+                //3 : Second at 1847 ms from start.
+                println("$value at ${System.currentTimeMillis() - startTime} ms from start.")
+            }
+    }
+}
+
+/**
+ * Flattening flows - flatMapMerge
+ */
+private fun requestFlow(i: Int): Flow<String> = flow {
+    emit("$i : First")
+    delay(500)
+    emit("$i : Second")
+}
+
+private fun test11_2() {
+    // flatMapMerge - Another flattening operation is to concurrently collect all the incoming flows and merge their values into a single flow so that values are emitted as soon as possible. I
+    runBlocking {
+        val startTime = System.currentTimeMillis()
+        (1..3).asFlow()
+            .onEach { delay(100) }
+            .flatMapMerge { requestFlow(it) } // returns a flow of flows (Flow<Flow<String>>)
+            .collect { value ->
+                // 1 : First at 126 ms from start.
+                //2 : First at 224 ms from start.
+                //3 : First at 328 ms from start.
+                //1 : Second at 629 ms from start.
+                //2 : Second at 729 ms from start.
+                //3 : Second at 837 ms from start.
+                System.err.println("$value at ${System.currentTimeMillis() - startTime} ms from start.")
+            }
+    }
+}
+
+/**
+ * Flattening flows - flatMapLatest
+ */
+private fun test11_3() {
+    runBlocking {
+        val startTime = System.currentTimeMillis()
+        (1..3).asFlow()
+            .onEach { delay(100) }
+            .flatMapLatest { requestFlow(it) } // returns a flow of flows (Flow<Flow<String>>)
+            .collect { value ->
+                // TODO:flatMapLatest
+                // 1 : First at 128 ms from start.
+                //2 : First at 258 ms from start.
+                //3 : First at 362 ms from start.
+                //3 : Second at 870 ms from start.
+                println("$value at ${System.currentTimeMillis() - startTime} ms from start.")
+            }
+    }
+}
+
+/**
+ * Flow exceptions
+ */
+
+/***
+ * Flow exceptions - Collector try and catch
+ */
+private fun test12_1() {
+    fun simple(): Flow<Int> = flow {
+        for (i in 1..3) {
+            println("Emitting $i")
+            emit(i)
+        }
+    }
+    runBlocking {
+        try {
+            // A collector can use Kotlin's try/catch block to handle exceptions
+            simple().collect { value ->
+                println(value)
+                check(value <= 1) { "Collected $value" }
+            }
+        } catch (e: Exception) {
+            println("Caught $e")
+        }
+    }
+}
+
+/***
+ * Flow exceptions - Everything is caught
+ */
+private fun test12_2() {
+    // Emitting 1
+    //String 1
+    //Emitting 2
+    //Caught java.lang.IllegalStateException: Crashed on 2
+    fun simple(): Flow<String> =
+        flow {
+            for (i in 1..3) {
+                println("Emitting $i")
+                emit(i)
+            }
+        }.map { value ->
+            check(value <= 1) { "Crashed on $value" } // IllegalStateException occurred on value 3
+            "String $value"
+        }
+
+    runBlocking {
+        try {
+            simple().collect { value -> println(value) }
+        } catch (e: Throwable) {
+            println("Caught $e")
+        }
+    }
+}
+
+/**
+ * Exception transparency
+ */
+
+private fun test13() {
+    // Emitting 1
+    //String 1
+    //Emitting 2
+    //Caught java.lang.IllegalStateException: Crashed on 2
+    fun simple(): Flow<String> =
+        flow {
+            for (i in 1..3) {
+                println("Emitting $i")
+                emit(i)
+            }
+        }.map { value ->
+            check(value <= 1) { "Crashed on $value" } // IllegalStateException occurred on value 3
+            "String $value"
+        }
+
+
+    runBlocking {
+        simple()
+            .catch { e -> emit("Caught $e") } // emit an exception
+            .collect { value -> println(value) }
+    }
+}
+
+/**
+ * Exception transparency - Transparent catch
+ */
+private fun test13_1() {
+    // Emitting 1
+    //1
+    //Emitting 2
+    //Exception in thread "main" java.lang.IllegalStateException: Crashed on 2
+    fun simple(): Flow<Int> = flow {
+        for (i in 1..3) {
+            println("Emitting $i")
+            emit(i)
+        }
+    }
+
+    runBlocking {
+        simple()
+            .catch { e -> println("Caught $e") } // doest catch downstream exception
+            .collect { value ->
+                check(value <= 1) { "Crashed on $value" }
+                println(value)
+            }
+    }
+}
+
+/**
+ * Exception transparency - Catching declaratively
+ */
+private fun test13_2() {
 
 }
+
 
 fun main() {
 //    test1()
@@ -376,5 +729,21 @@ fun main() {
 //    test8_1()
 //    test8_2()
 
-    test9()
+//    test9()
+//    test9_1()
+//    test9_2()
+
+//    test10_1()
+//    test10_2()
+
+//    test11()
+//    test11_1()
+//    test11_2()
+//    test11_3()
+
+//    test12_1()
+//    test12_2()
+
+//    test13()
+    test13_1()
 }
