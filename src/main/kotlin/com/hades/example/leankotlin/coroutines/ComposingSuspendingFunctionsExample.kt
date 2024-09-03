@@ -1,8 +1,11 @@
 package com.hades.example.leankotlin.coroutines
 
+import com.hades.example.leankotlin.concepts._4_class_and_object._9_sealed_classes_and_interfaces.log
 import kotlinx.coroutines.*
 import kotlin.system.measureTimeMillis
 
+// Composing suspending functions
+// https://kotlinlang.org/docs/composing-suspending-functions.html
 
 /**
  * Sequential by default
@@ -181,11 +184,10 @@ private suspend fun failedConcurrentSum(): Int {
     }
 }
 
-
 fun main() {
-//    test1()
+    test1()
 //    test2()
 //    test3()
-    test4()
+//    test4()
 //    test5()
 }

@@ -2,6 +2,8 @@ package com.hades.example.leankotlin.coroutines
 
 import kotlinx.coroutines.*
 
+// Cancellation and timeouts
+// https://kotlinlang.org/docs/cancellation-and-timeouts.html
 
 /**
  * Cancelling coroutine execution

@@ -38,6 +38,7 @@ dependencies {
     // https://mvnrepository.com/artifact/javax.inject/javax.inject
     implementation("javax.inject:javax.inject:1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC.2")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC.2")
 //    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
 }
 
