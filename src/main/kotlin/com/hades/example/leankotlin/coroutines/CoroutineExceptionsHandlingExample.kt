@@ -1,6 +1,7 @@
 package com.hades.example.leankotlin.coroutines
 
 import kotlinx.coroutines.*
+import java.io.IOException
 
 // Coroutine exceptions handling
 // https://kotlinlang.org/docs/exception-handling.html
@@ -172,14 +173,14 @@ private fun test1_example4() {
  * CoroutineExceptionHandler
  */
 private fun test2() {
-//    test2_example1()
+    test2_example1()
 //    test2_example2()
 //    test2_example3()
 //    test2_example4()
 //    test2_example5()
 //    test2_example6()
 //    test2_example7()
-    test2_example8()
+//    test2_example8()
 }
 
 @OptIn(DelicateCoroutinesApi::class)
@@ -187,7 +188,7 @@ private fun test2_example1() {
     println("---------->")
     runBlocking {
         val handler = CoroutineExceptionHandler { _, exception ->
-            println("CoroutineExceptionHandler got $exception")
+            println("CoroutineExceptionHandler got $exception with suppressed ${exception.suppressed.contentToString()}")
         }
         val job = GlobalScope.launch(handler) { // root coroutine, running in GlobalScope
             throw AssertionError()
@@ -195,12 +196,12 @@ private fun test2_example1() {
         val deferred = GlobalScope.async(handler) { // also root, but async instead of launch
             throw ArithmeticException() // Nothing will be printed, relying on user to call deferred.await()
         }
-//        joinAll(job, deferred)
+        joinAll(job, deferred)
     }
     println("<----------")
 
     // ---------->
-    //CoroutineExceptionHandler got java.lang.AssertionError
+    //CoroutineExceptionHandler got java.lang.AssertionError with suppressed []
     //<----------
 
     // CoroutineExceptionHandler is working on joinAll of GlobalScope.launch, and GlobalScope.async
@@ -403,7 +404,7 @@ private fun test2_example8() {
  * Cancellation and exceptions
  */
 private fun test3() {
-    test3_example1()
+//    test3_example1()
     test3_example2()
 }
 
@@ -432,45 +433,232 @@ private fun test3_example1() {
     //Parent is not cancelled
 }
 
+@OptIn(DelicateCoroutinesApi::class)
 private fun test3_example2() {
+    println("---------------->")
 
+    // The original exception is handled by the parent only when all its children terminate, which is demonstrated by the following example.
+    runBlocking {
+        val handler = CoroutineExceptionHandler { _, exception ->
+            println("CoroutineExceptionHandler got $exception")
+
+        }
+        val job = GlobalScope.launch(handler) {
+            launch { // the first child
+                try {
+                    delay(Long.MAX_VALUE)
+                } finally {
+                    withContext(NonCancellable) {
+                        println("Children are cancelled, but exception is not handled util all the children terminate")
+                        delay(100)
+                        println("The first child finished it's non cancellable block")
+                    }
+                }
+            }
+
+            // In these examples, CoroutineExceptionHandler is always installed to a coroutine that is created in GlobalScope. It does not make sense to install an exception handler to a coroutine that is launched in the scope of the main runBlocking,
+            // If a coroutine encounters an exception other than CancellationException, it cancels its parent with that exception. This behaviour cannot be overridden and is used to provide stable coroutines hierarchies for structured concurrency. CoroutineExceptionHandler implementation is not used for child coroutines.
+            // The original exception is handled by the parent only when all its children terminate
+            // the second child's ArithmeticException -> cancel parent GlobalScope.launch with ArithmeticException-> cancel first child -> when all its children terminate, original exception
+            // ArithmeticException is handled by CoroutineExceptionHandler
+            launch { // second child
+                delay(10)
+                println("Second child throws an exception")
+                throw ArithmeticException()
+            }
+        }
+        job.join()
+    }
+    println("<----------------")
+
+
+    // ---------------->
+    //Second child throws an exception
+    //Children are cancelled, but exception is not handled util all the children terminate
+    //The first child finished it's non cancellable block
+    //CoroutineExceptionHandler got java.lang.ArithmeticException
+    //<----------------
 }
 
 /**
  * Exceptions aggregation
  */
-private fun test4() {
 
+private fun test4() {
+//    test4_example1()
+    test4_example2()
 }
+
+@OptIn(DelicateCoroutinesApi::class)
+private fun test4_example1() {
+    // When multiple children of a coroutine fail with an exception, the general rule is "the first exception wins", so the first exception gets handled. All additional exceptions that happen after the first one are attached to the first exception as suppressed ones.
+
+    println("---------------->")
+    runBlocking {
+        val handler = CoroutineExceptionHandler { _, exception ->
+            println("CoroutineExceptionHandler got $exception with suppressed ${exception.suppressed.contentToString()}")
+        }
+        val job = GlobalScope.launch(handler) {
+            launch {// it gets cancelled when another sibling fails with IOException
+                try {
+                    delay(Long.MAX_VALUE)
+                } finally {
+                    throw ArithmeticException() // the second exception
+                }
+            }
+
+            launch { // second child
+                delay(100)
+                println("Second child throws an exception")
+                throw IOException() // the first exception
+            }
+            delay(Long.MAX_VALUE)
+            println("Unreached!")
+        }
+        job.join()
+    }
+    println("<----------------")
+
+    //---------------->
+    //Second child throws an exception
+    //CoroutineExceptionHandler got java.io.IOException with suppressed [java.lang.ArithmeticException]
+    //<----------------
+}
+
+@OptIn(DelicateCoroutinesApi::class)
+private fun test4_example2() {
+    // Cancellation exceptions are transparent and are unwrapped by default:
+
+    println("---------------->")
+    runBlocking {
+        val handler = CoroutineExceptionHandler { _, exception ->
+            println("CoroutineExceptionHandler got $exception with suppressed ${exception.suppressed.contentToString()}")
+        }
+        val job = GlobalScope.launch(handler) {
+            val innerJob = launch {//all this stack if coroutines will get cancelled
+                launch {
+                    launch {
+                        throw IOException() // the origin exception
+                    }
+                }
+            }
+            try {
+                innerJob.join()
+            } catch (ex: CancellationException) {
+                println("Rethrowing CancellationException with original cause: $ex")
+                throw ex // cancellation exception is rethrown, yet the origin IOException gets to the handler
+            }
+        }
+        job.join()
+    }
+    println("<----------------")
+
+    //---------------->
+    //Rethrowing CancellationException with original cause: kotlinx.coroutines.JobCancellationException: StandaloneCoroutine is cancelling; job=StandaloneCoroutine{Cancelling}@48bac10e
+    //CoroutineExceptionHandler got java.io.IOException with suppressed []
+    //<----------------
+}
+
 
 /**
  * Supervision
  */
 
-private fun test5() {
+/**
+ * Supervision - Supervision job
+ */
+private fun test5_1() {
+    runBlocking {
+        val supervisor = SupervisorJob()
+        with(CoroutineScope(coroutineContext + supervisor)) {
+            // launch the first child - it's exception is ignored for this example (don't do this in the practice!)
 
+            val handler = CoroutineExceptionHandler { _, exception ->
+                println("CoroutineExceptionHandler got $exception with suppressed ${exception.suppressed.contentToString()}")
+            }
+            val firstChild = launch(handler) {
+                println("The first child is failing")
+                throw AssertionError("The first child is cancelled")
+            }
+
+            // launch the second child
+            val secondChild = launch {
+                firstChild.join()
+                // Cancellation of the first child is not propagated to the second child
+                println("The first child is ${firstChild.isCancelled} but the second child is still active")
+                try {
+                    delay(Long.MAX_VALUE)
+                } finally {
+                    println("The second child is cancelled because the supervisor was cancelled")
+                }
+            }
+            //  wait until the first child fails & completes
+            println("First child joined")
+            firstChild.join()
+            println("Cancelling the supervisor")
+            supervisor.cancel()
+            println("Second child joined")
+            secondChild.join()
+        }
+    }
+
+    // First child joined
+    //The first child is failing
+    //CoroutineExceptionHandler got java.lang.AssertionError: The first child is cancelled with suppressed []
+    //The first child is true but the second child is still active
+    //Cancelling the supervisor
+    //Second child joined
+    //The second child is cancelled because the supervisor was cancelled
+
+
+    // Cancellation of the child is not propagated to the other child
+    // Children are cancelled because the supervisor was cancelled
 }
 
 /**
- * Supervision job
+ * Supervision - Supervision scope
  */
-private fun test6() {
+private fun test5_2() {
+    // Instead of coroutineScope, we can use supervisorScope for scoped concurrency. It propagates the cancellation in one direction only and cancels all its children only if it failed itself. It also waits for all children before completion just like coroutineScope does.
+    runBlocking {
+        try {
+            supervisorScope {
+                val child = launch {
+                    try {
+                        println("The child is sleeping")
+                        delay(Long.MAX_VALUE)
+                    } finally {
+                        println("The child is cancelled")
+                    }
+                }
+                yield()
+                // Give our child a change to execute and print using yield
+                println("Throwing an exception from the scope")
+                throw AssertionError()
+            }
+        } catch (e: AssertionError) {
+            println("Caught AssertionError")
+        }
+    }
 
+    // The child is sleeping
+    //Throwing an exception from the scope
+    //The child is cancelled
+    //Caught AssertionError
 }
 
 /**
- * Supervision scope
+ * Supervision scope - Supervision scope - Exceptions in supervised coroutines
  */
-private fun test7() {
+private fun test5_2_1() {
 
 }
 
 fun main() {
 //    test1()
 //    test2()
-    test3()
+//    test3()
 //    test4()
-//    test5()
-//    test6()
-//    test7()
+//    test5_1()
+    test5_2()
 }
