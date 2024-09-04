@@ -704,9 +704,238 @@ private fun test13_1() {
  * Exception transparency - Catching declaratively
  */
 private fun test13_2() {
-
+    fun simple(): Flow<Int> = flow {
+        for (i in 1..3) {
+            println("Emitting $i")
+            emit(i)
+        }
+    }
+    println("-------->")
+    runBlocking {
+        simple()
+            .onEach { value ->
+                check(value <= 1) { "Crashed on $value" }
+                println(value)
+            }.catch { e -> println("Caught $e") } // catch all the exceptions without explicitly using a try/catch block:
+            .collect()
+    }
+    println("<--------")
 }
 
+
+/**
+ * Flow completion
+ */
+// When flow collection completes (normally or exceptionally) it may need to execute an action. As you may have already noticed, it can be done in two ways: imperative or declarative.
+
+/**
+ * Flow completion - Imperative finally block
+ */
+private fun test14_1() {
+    fun simple(): Flow<Int> = (1..3).asFlow()
+
+    runBlocking {
+        try {
+            simple().collect { value -> println(value) }
+        } finally {
+            println("Done")
+        }
+    }
+}
+
+/**
+ * Flow completion - Declarative handling
+ */
+private fun test14_2() {
+//    test14_2_example1()
+    test14_2_example2()
+}
+
+private fun test14_2_example1() {
+    fun simple(): Flow<Int> = (1..3).asFlow()
+
+    runBlocking {
+        simple()
+            .onCompletion { println("Done") }
+            .collect { value -> println(value) }
+    }
+}
+
+private fun test14_2_example2() {
+    // Having throw RuntimeException():
+    // 1
+    //Flow completed exceptionally
+    //Caught exception: java.lang.RuntimeException
+
+    // No throw RuntimeException():
+    // 1
+    //Done
+    fun simple(): Flow<Int> = flow {
+        emit(1)
+        throw RuntimeException()
+    }
+
+    runBlocking {
+        simple()
+            // The onCompletion operator, unlike catch, does not handle the exception. As we can see from the above example code, the exception still flows downstream. It will be delivered to further onCompletion operators and can be handled with a catch operator.
+            .onCompletion { cause -> if (cause != null) println("Flow completed exceptionally") else println("Done") }
+            .catch { cause -> println("Caught exception: $cause") }
+            .collect { value -> println(value) }
+    }
+}
+
+
+/**
+ * Flow completion - Successful completion
+ */
+private fun test14_3() {
+    // 1
+    //Collected 2
+    //Flow completed with java.lang.IllegalStateException: kotlin.Unit
+    //Exception in thread "main" java.lang.IllegalStateException: kotlin.Unit
+    fun simple(): Flow<Int> = (1..3).asFlow()
+
+    println("------------>")
+    runBlocking {
+        simple()
+            // Another difference with catch operator is that onCompletion sees all exceptions and receives a null exception only on successful completion of the upstream flow (without cancellation or failure).
+            .onCompletion { cause -> if (cause != null) println("Flow completed with $cause") else println("Done") }
+            .collect { value ->
+                check(value <= 1) { println("Collected $value") }
+                println(value)
+            }
+    }
+    println("<------------")
+}
+
+/**
+ * Imperative versus declarative
+ */
+
+
+/**
+ * Launching flow
+ */
+
+private fun test16() {
+    test16_example1()
+//    test16_example2()
+}
+
+private fun test16_example1() {
+    // --------->
+    //Event: 1
+    //Event: 2
+    //Event: 3
+    //Done
+    //<---------
+    fun events(): Flow<Int> = (1..3).asFlow().onEach { delay(100) }
+    println("--------->")
+    runBlocking {
+        events()
+            .onEach { event -> println("Event: $event") }
+            .collect() // Collecting the flow waits
+        println("Done")
+    }
+    println("<---------")
+}
+
+private fun test16_example2() {
+    //--------->
+    //Done
+    //Event: 1
+    //Event: 2
+    //Event: 3
+    //<---------
+
+    fun events(): Flow<Int> = (1..3).asFlow().onEach { delay(100) }
+    println("--------->")
+    runBlocking {
+        events()
+            .onEach { event -> println("Event: $event") }
+            // By replacing collect with launchIn we can launch a collection of the flow in a separate coroutine, so that execution of further code immediately continues:
+            .launchIn(this) // Launching this flow in a separate coroutine
+        println("Done")
+    }
+    println("<---------")
+}
+
+/**
+ * Launching flow - Flow cancellation checks
+ */
+private fun test16_1() {
+//    test16_1_example1()
+    test16_1_example2()
+}
+
+private fun test16_1_example1() {
+// Emitting 1
+    //1
+    //Emitting 2
+    //2
+    //Emitting 3
+    //3
+    //Emitting 4
+    //Exception in thread "main" kotlinx.coroutines.JobCancellationException: BlockingCoroutine was cancelled; job="coroutine#1":BlockingCoroutine{Cancelled}@d70c109
+
+    // For convenience, the flow builder performs additional ensureActive checks for cancellation on each emitted value. It means that a busy loop emitting from a flow { ... } is cancellable:
+    fun foo(): Flow<Int> = flow {
+        for (i in 1..5) {
+            println("Emitting $i")
+            emit(i)
+        }
+    }
+
+    runBlocking {
+        foo().collect { value ->
+            if (value == 3) cancel() // throw JobCancellationException
+            println(value)
+        }
+    }
+}
+
+private fun test16_1_example2() {
+    //1
+    //2
+    //3
+    //4
+    //5
+    //Exception in thread "main" kotlinx.coroutines.JobCancellationException: BlockingCoroutine was cancelled; job="coroutine#1":BlockingCoroutine{Cancelled}@4fccd51b
+
+    // However, most other flow operators do not do additional cancellation checks on their own for performance reasons. For example, if you use IntRange.asFlow extension to write the same busy loop and don't suspend anywhere, then there are no checks for cancellation:
+    fun foo(): Flow<Int> = (1..5).asFlow()
+
+    runBlocking {
+        foo().collect { value ->
+            if (value == 3) cancel()
+            println(value)
+        }
+    }
+}
+
+/**
+ * Launching flow - Flow cancellation checks - Making busy flow cancellable
+ *
+ */
+private fun test16_1_1() {
+    // 1
+    //2
+    //3
+    //Exception in thread "main" kotlinx.coroutines.JobCancellationException: BlockingCoroutine was cancelled; job="coroutine#1":BlockingCoroutine{Cancelled}@5a42bbf4
+
+    fun foo(): Flow<Int> = (1..5).asFlow().cancellable()
+
+    runBlocking {
+        foo().collect { value ->
+            if (value == 3) cancel()
+            println(value)
+        }
+    }
+}
+
+/**
+ * Flow and Reactive Streams
+ */
 
 fun main() {
 //    test1()
@@ -745,5 +974,14 @@ fun main() {
 //    test12_2()
 
 //    test13()
-    test13_1()
+//    test13_1()
+//    test13_2()
+
+//    test14_1()
+//    test14_2()
+//    test14_3()
+
+//    test16()
+//    test16_1()
+    test16_1_1()
 }
