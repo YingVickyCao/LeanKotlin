@@ -1,5 +1,6 @@
 package com.hades.example.leankotlin.coroutines
 
+import com.hades.example.leankotlin.coroutines.CoroutineAndChannelsTutorial.loadData
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.*
 import kotlin.concurrent.fixedRateTimer
@@ -267,21 +268,104 @@ private fun test7() {
  * Buffered channels
  */
 private fun test8() {
+    runBlocking {
+        val channel = Channel<Int>(4) // create buffered channel
+        val sender = launch {
+            repeat(10) {
+                println("Sending $it")
+                channel.send(it) // will suspend when buffer is full
+                println("Sent $it")
+            }
+        }
+        println("Waiting")
+        delay(1000) // don't receive anything, just wait
+        println("Cancelled")
+        sender.cancel() // cancel sender coroutine
+    }
 
+    // Waiting
+    //Sending 0
+    //Sent 0
+    //Sending 1
+    //Sent 1
+    //Sending 2
+    //Sent 2
+    //Sending 3
+    //Sent 3
+    //Sending 4
+    //Cancelled
 }
 
 /**
  * Channels are fair
  */
 private fun test9() {
+    // Send and receive operations to channels are fair with respect to the order of their invocation from multiple coroutines.
+    // TODO:Note that sometimes channels may produce executions that look unfair due to the nature of the executor that is being used. https://github.com/Kotlin/kotlinx.coroutines/issues/111
+    data class Ball(var hits: Int)
 
+    suspend fun player(name: String, table: Channel<Ball>) {
+        for (ball in table) { // receive the ball in a loop
+            ball.hits++
+            println("$name $ball")
+            delay(300)
+            table.send(ball)    // send the ball back
+        }
+    }
+
+    runBlocking {
+        val table = Channel<Ball>() // a shared table
+        launch { player("ping", table) }
+        launch { player("pong", table) }
+        table.send(Ball((0)))   // serve the ball
+        delay(1000)
+        coroutineContext.cancelChildren()   // game over, cancel them
+    }
+
+    //ping Ball(hits=1)
+    //pong Ball(hits=2)
+    //ping Ball(hits=3)
+    //pong Ball(hits=4)
 }
 
 /**
  * Ticker channels
  */
 private fun test10() {
+    // TODO:Ticker channel is a special rendezvous channel that produces Unit every time given delay passes since last consumption from this channel. Though it may seem to be useless standalone, it is a useful building block to create complex time-based produce pipelines and operators that do windowing and other time-dependent processing. Ticker channel can be used in select to perform "on tick" action.
 
+    runBlocking {
+        val tickerChannel: ReceiveChannel<Unit> = ticker(delayMillis = 200, initialDelayMillis = 0)
+        var nextElement = withTimeoutOrNull(1) { tickerChannel.receive() }
+        println("Initial element is available immediately : $nextElement") // no initial delay
+
+        nextElement = withTimeoutOrNull(100) { tickerChannel.receive() } // all subsequent elements have 200ms
+        println("Next element is not ready in 100ms : $nextElement")
+
+        nextElement = withTimeoutOrNull(120) { tickerChannel.receive() }
+        println("Next element is ready in 200ms : $nextElement")
+
+        // Emulate large consumption delays
+        println("Consumer pauses for 300ms")
+        delay(300)
+
+        // Next element is available immediately
+        nextElement = withTimeoutOrNull(1) { tickerChannel.receive() }
+        println("Next element is available immediately after large consumer delay: $nextElement")
+
+        // Note that the pause between `receive` calls is taken into account and next element arrives faster
+        nextElement = withTimeoutOrNull(120) { tickerChannel.receive() }
+        println("Next element is ready in 100ms after consumer pause in 300ms : $nextElement")
+
+        tickerChannel.cancel() // indicate that no more elements are needed
+    }
+
+    // Initial element is available immediately : kotlin.Unit
+    //Next element is not ready in 100ms : null
+    //Next element is ready in 200ms : kotlin.Unit
+    //Consumer pauses for 300ms
+    //Next element is available immediately after large consumer delay: kotlin.Unit
+    //Next element is ready in 100ms after consumer pause in 300ms : kotlin.Unit
 }
 
 fun main() {
@@ -291,5 +375,8 @@ fun main() {
 //    test4()
 //    test5()
 //    test6()
-    test7()
+//    test7()
+//    test8()
+//    test9()
+    test10()
 }
