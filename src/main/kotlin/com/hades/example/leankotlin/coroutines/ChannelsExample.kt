@@ -92,6 +92,7 @@ private fun test2_exmple2() {
 /**
  * Building channel producers
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 private fun test3() {
     // 1
     //2
@@ -116,6 +117,7 @@ private fun test3() {
 /**
  * Pipelines
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 private fun test4() {
     // 1
     //4
@@ -149,6 +151,7 @@ private fun test4() {
 /***
  * Prime numbers with pipeline
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 private fun test5() {
     // 2
     //3
@@ -188,6 +191,7 @@ private fun test5() {
 /**
  * Fan-out
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 private fun test6() {
     // Multiple coroutines may receive from the same channel, distributing work between themselves.
     fun CoroutineScope.produceNumbers(): ReceiveChannel<Int> = produce<Int> {
@@ -331,6 +335,7 @@ private fun test9() {
 /**
  * Ticker channels
  */
+@OptIn(ObsoleteCoroutinesApi::class)
 private fun test10() {
     // TODO:Ticker channel is a special rendezvous channel that produces Unit every time given delay passes since last consumption from this channel. Though it may seem to be useless standalone, it is a useful building block to create complex time-based produce pipelines and operators that do windowing and other time-dependent processing. Ticker channel can be used in select to perform "on tick" action.
 
