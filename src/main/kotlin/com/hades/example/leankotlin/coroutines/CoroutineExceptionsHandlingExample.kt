@@ -176,9 +176,10 @@ private fun test2() {
 //    test2_example2()
 //    test2_example3()
 //    test2_example4()
-    test2_example5()
+//    test2_example5()
 //    test2_example6()
 //    test2_example7()
+    test2_example8()
 }
 
 @OptIn(DelicateCoroutinesApi::class)
@@ -201,6 +202,8 @@ private fun test2_example1() {
     // ---------->
     //CoroutineExceptionHandler got java.lang.AssertionError
     //<----------
+
+    // CoroutineExceptionHandler is working on joinAll of GlobalScope.launch, and GlobalScope.async
 }
 
 @OptIn(DelicateCoroutinesApi::class)
@@ -225,6 +228,8 @@ private fun test2_example2() {
     //CoroutineExceptionHandler got java.lang.AssertionError
     //Exception in thread "main" java.lang.ArithmeticException
     //Process finished with exit code 1
+
+    // CoroutineExceptionHandler is working on job.join() of GlobalScope.launch, but not working on deferred.await() of GlobalScope.async
 }
 
 @OptIn(DelicateCoroutinesApi::class)
@@ -257,6 +262,9 @@ private fun test2_example3() {
     //Caught ArithmeticException
     //Reached
     //<----------
+
+    // CoroutineExceptionHandler is working on job.join() of GlobalScope.launch
+    // try-catch is working on deferred.await() of GlobalScope.async
 }
 
 @OptIn(DelicateCoroutinesApi::class)
@@ -283,6 +291,7 @@ private fun test2_example4() {
     //CoroutineExceptionHandler got java.lang.AssertionError
     //Exception in thread "main" java.lang.ArithmeticException
 
+    // CoroutineExceptionHandler is working on job.join() of GlobalScope.launch, not working on deferred.await() of GlobalScope.async
 }
 
 @OptIn(DelicateCoroutinesApi::class)
@@ -303,6 +312,9 @@ private fun test2_example5() {
     // ---------->
     //Reached
     //<----------
+
+
+    // CoroutineExceptionHandler is useful on joinAll of GlobalScope.async, but  exception not handled on CoroutineExceptionHandler.
 }
 
 @OptIn(DelicateCoroutinesApi::class)
@@ -323,7 +335,7 @@ private fun test2_example6() {
     // ---------->
     //Exception in thread "main" java.lang.ArithmeticException
 
-    // CoroutineExceptionHandler is not working on  deferred.await()
+    // CoroutineExceptionHandler is not working on  deferred.await() of GlobalScope.async
 }
 
 @OptIn(DelicateCoroutinesApi::class)
@@ -355,10 +367,72 @@ private fun test2_example7() {
     // CoroutineExceptionHandler is only can be used for GlobalScope.launch, not useful for launch
 }
 
+private fun test2_example8() {
+    println("---------->")
+
+    try {
+        runBlocking {
+            val job = launch() {
+                throw AssertionError()
+            }
+            job.join()
+
+            val deferred = async() {
+                throw ArithmeticException()
+            }
+            try {
+                deferred.await()
+            } catch (ex: ArithmeticException) {
+                println("Caught ArithmeticException")
+            }
+            println("Reached")
+        }
+    } catch (ex: Exception) {
+        println("Caught $ex")
+    }
+
+    println("<----------")
+
+    // ---------->
+    //Exception in thread "main" java.lang.AssertionError
+
+    // try-catch is not useful on launch / async in runBlocking
+}
+
 /**
  * Cancellation and exceptions
  */
 private fun test3() {
+    test3_example1()
+    test3_example2()
+}
+
+private fun test3_example1() {
+    runBlocking {
+        val job = launch {
+            val child = launch {
+                try {
+                    delay(Long.MAX_VALUE)
+                } finally {
+                    println("Child is cancelled.")
+                }
+            }
+            yield()
+            println("Cancelling child")
+            child.cancel()
+            child.join()
+            yield()
+            println("Parent is not cancelled")
+        }
+        job.join()
+    }
+
+    // Cancelling child
+    //Child is cancelled.
+    //Parent is not cancelled
+}
+
+private fun test3_example2() {
 
 }
 
@@ -393,9 +467,8 @@ private fun test7() {
 
 fun main() {
 //    test1()
-//    test1_example4()
-    test2()
-//    test3()
+//    test2()
+    test3()
 //    test4()
 //    test5()
 //    test6()
