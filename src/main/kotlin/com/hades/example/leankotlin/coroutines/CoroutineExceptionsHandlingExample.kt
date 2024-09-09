@@ -569,8 +569,8 @@ private fun test4_example2() {
  */
 private fun test5_1() {
     runBlocking {
-        val supervisor = SupervisorJob()
-        with(CoroutineScope(coroutineContext + supervisor)) {
+        val supervisorJob = SupervisorJob()
+        with(CoroutineScope(coroutineContext + supervisorJob)) {
             // launch the first child - it's exception is ignored for this example (don't do this in the practice!)
 
             val handler = CoroutineExceptionHandler { _, exception ->
@@ -596,7 +596,7 @@ private fun test5_1() {
             println("First child joined")
             firstChild.join()
             println("Cancelling the supervisor")
-            supervisor.cancel()
+            supervisorJob.cancel()
             println("Second child joined")
             secondChild.join()
         }
@@ -651,7 +651,28 @@ private fun test5_2() {
  * Supervision scope - Supervision scope - Exceptions in supervised coroutines
  */
 private fun test5_2_1() {
+    runBlocking {
+        // Every child should handle its exceptions by itself via the exception handling mechanism.
+        val handler = CoroutineExceptionHandler { _, exception -> println("CoroutineExceptionHandler got $exception") }
+        supervisorScope {
+            val child = launch(handler) {
+                println("the child throws an exception")
+                throw AssertionError()
+            }
+            val child2 = launch(handler) {
+                println("the child2 waiting")
+                delay(2000L)
+                println("the child2 is completed")
+            }
+            println("The scope supervisorScope is completing")
 
+        }
+        println("The scope runBlocking is completed")
+    }
+    // The scope supervisorScope is completing
+    //the child throws an exception
+    //CoroutineExceptionHandler got java.lang.AssertionError
+    //The scope runBlocking is completed
 }
 
 fun main() {
@@ -660,5 +681,6 @@ fun main() {
 //    test3()
 //    test4()
 //    test5_1()
-    test5_2()
+//    test5_2()
+    test5_2_1()
 }
