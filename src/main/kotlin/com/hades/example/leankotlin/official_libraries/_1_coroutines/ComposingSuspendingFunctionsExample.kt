@@ -1,6 +1,5 @@
-package com.hades.example.leankotlin.coroutines
+package com.hades.example.leankotlin.official_libraries._1_coroutines
 
-import com.hades.example.leankotlin.concepts._4_class_and_object._9_sealed_classes_and_interfaces.log
 import kotlinx.coroutines.*
 import kotlin.system.measureTimeMillis
 

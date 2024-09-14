@@ -1,9 +1,7 @@
-package com.hades.example.leankotlin.coroutines
+package com.hades.example.leankotlin.official_libraries._1_coroutines
 
-import com.hades.example.leankotlin.coroutines.CoroutineAndChannelsTutorial.loadData
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.*
-import kotlin.concurrent.fixedRateTimer
 
 // Channels
 // https://kotlinlang.org/docs/channels.html

@@ -1,4 +1,4 @@
-package com.hades.example.leankotlin.coroutines.CoroutineAndChannelsTutorial.channel
+package com.hades.example.leankotlin.official_libraries._1_coroutines.coroutine_and_channels_tutorial.channel
 
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
@@ -9,7 +9,7 @@ import kotlinx.coroutines.runBlocking
 fun main() {
     println("---->")
     runBlocking<Unit> {
-        val channel: Channel<String> = Channel(2)
+        val channel: Channel<String> = Channel(Channel.CONFLATED)
         launch {
             println("A start: [${Thread.currentThread().name}]")
             channel.send("A1")
@@ -26,7 +26,7 @@ fun main() {
         }
         launch {
             println("receive start: [${Thread.currentThread().name}]")
-            repeat(6) {
+            repeat(1) {
                 val x = channel.receive()
                 println("receive: $x ,[${Thread.currentThread().name}]")
             }

@@ -1,8 +1,7 @@
-package com.hades.example.leankotlin.coroutines
+package com.hades.example.leankotlin.official_libraries._1_coroutines
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import javax.swing.text.FlowView.FlowStrategy
 import kotlin.system.measureTimeMillis
 
 // Asynchronous Flow

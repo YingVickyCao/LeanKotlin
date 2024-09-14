@@ -1,14 +1,14 @@
-package com.hades.example.leankotlin.coroutines.CoroutineAndChannelsTutorial.channel
+package com.hades.example.leankotlin.official_libraries._1_coroutines.coroutine_and_channels_tutorial.channel
 
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-
 // https://kotlinlang.org/docs/coroutines-and-channels.html#channels
+
 fun main() {
     println("---->")
     runBlocking<Unit> {
-        val channel: Channel<String> = Channel()
+        val channel: Channel<String> = Channel(Channel.UNLIMITED)
         launch {
             println("A start: [${Thread.currentThread().name}]")
             channel.send("A1")

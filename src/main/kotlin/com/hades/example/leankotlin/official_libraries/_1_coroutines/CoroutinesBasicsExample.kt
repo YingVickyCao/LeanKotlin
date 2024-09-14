@@ -1,4 +1,4 @@
-package com.hades.example.leankotlin.coroutines
+package com.hades.example.leankotlin.official_libraries._1_coroutines
 
 // https://kotlinlang.org/docs/coroutines-basics.html
 import kotlinx.coroutines.*
