@@ -1,6 +1,9 @@
 package com.hades.example.leankotlin.basics._2_Idioms
 
+import com.google.gson.Gson
+import com.google.gson.JsonElement
 import com.hades.example.leankotlin.concepts._1_types._2_data_type._2_object_type.array
+import java.math.BigDecimal
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -503,9 +506,44 @@ private fun test29() {
  */
 private fun test30() {
     val stream = Files.newInputStream(Paths.get("1.txt"))
-    stream.buffered().reader().use {
-        reader -> println(reader.readText())
+    stream.buffered().reader().use { reader ->
+        println(reader.readText())
     }
+}
+
+/**
+ * TODO:Generic function that requires the generic type information
+ *
+ */
+inline fun <reified T : Any> Gson.fromJson(json: JsonElement): T = this.fromJson(json, T::class.java)
+private data class Stu(val name: String)
+
+private fun test31() {
+}
+
+/**
+ * Swap two variables
+ */
+private fun test32() {
+    var a = 1
+    var b = 2
+    println("a=$a,b=$b")
+
+    a = b.also { b = a }
+    println("a=$a,b=$b")
+
+    // a=1,b=2
+    //a=2,b=1
+}
+
+/**
+ * Mark code as incomplete (TODO)
+ */
+
+private fun test33() {
+    // TODO: NotImplementedError
+    fun calcTaxes(): BigDecimal = TODO("Waiting for feedback from accounting")
+    calcTaxes() // ERROR: Exception in thread "main" kotlin.NotImplementedError: An operation is not implemented: Waiting for feedback from accounting
 }
 
 fun main() {
@@ -538,5 +576,8 @@ fun main() {
 //    test27()
 //    test28()
 //    test29()
-    test30()
+//    test30()
+//    test31()
+//    test32()
+    test33()
 }

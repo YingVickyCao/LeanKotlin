@@ -35,9 +35,14 @@ repositories {
 
 dependencies {
     testImplementation(kotlin("test"))
+
     // https://mvnrepository.com/artifact/javax.inject/javax.inject
     implementation("javax.inject:javax.inject:1")
+
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC.2")
+    implementation("com.google.code.gson:gson:2.11.0")
+
+
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC.2")
 //    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
 }
