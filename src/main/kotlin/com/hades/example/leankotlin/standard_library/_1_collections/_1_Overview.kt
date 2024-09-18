@@ -187,16 +187,64 @@ private fun test1_2() {
     test1_2_example5()
 }
 
-
+/**
+ * Collection types -  Set
+ */
 private fun test1_3() {
-
+    val numbers = setOf(1, 2, 3, 4)
+    println(numbers.size) // 4
+    println(numbers.contains(1)) // true
+    val numbers2 = setOf(4, 3, 2, 1)
+    println(numbers == numbers2) // true
+    println(numbers.first() == numbers2.first()) // false
+    println(numbers.first() == numbers2.last()) // true
 }
 
-
+/**
+ * Collection types -  Map
+ */
 private fun test1_4() {
+    val numbersMap = mapOf("Key1" to 1, "key2" to 2, "key3" to 3, "key4" to 1)
+    println(numbersMap.keys) //[Key1, key2, key3, key4]
+    println(numbersMap.values) // [1, 2, 3, 1]
+    if ("key2" in numbersMap) {
+        println(numbersMap["key2"]) // 2
+    }
+    println("${1 in numbersMap.values}") // true
+    println(numbersMap.containsValue(1)) // true
 
+    val numbersMap2 = mapOf("key2" to 2, "Key1" to 1, "key4" to 1, "key3" to 3)
+    println(numbersMap == numbersMap2) // true
+
+    val numbersMap3 = mutableMapOf("one" to 1, "two" to 2) // MutableMap
+    numbersMap3.put("three", 3)
+    println(numbersMap3) // {one=1, two=2, three=3}
+    numbersMap3["one"] = 11
+    println(numbersMap3) // {one=11, two=2, three=3}
+}
+
+/**
+ * Collection types -  ArrayDeque
+ */
+private fun test1_5() {
+    val deque = ArrayDeque(listOf(1, 2, 3))
+    println(deque) // [1, 2, 3]
+
+    deque.addFirst(0)
+    deque.addLast(4)
+    println(deque) // [0, 1, 2, 3, 4]
+
+    println(deque.first()) // 0
+    println(deque.last()) // 4
+
+    deque.removeFirst()
+    deque.removeLast()
+    println(deque) // [1, 2, 3]
 }
 
 fun main() {
-    test1_2()
+//    test1_2()
+//    test1_3()
+//    test1_4()
+    test1_5()
 }
