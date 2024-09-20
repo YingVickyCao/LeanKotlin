@@ -124,10 +124,68 @@ private fun test5() {
 /**
  * Copy
  */
+private fun test6() {
+    fun test6_example1() {
+        class Person(var name: String) {
+            override fun toString(): String {
+                return "Person(name='$name')"
+            }
+        }
+
+        val alice = Person("Alice")
+        val sourceList = mutableListOf(alice, Person("Bob"))
+        println(sourceList) // [Person(name='Alice'), Person(name='Bob')]
+
+        val copyList = sourceList.toList()
+        println(copyList) // [Person(name='Alice'), Person(name='Bob')]
+
+
+        sourceList.add(Person("Charles"))
+        println(sourceList) // [Person(name='Alice'), Person(name='Bob'), Person(name='Charles')]
+        println(copyList) // [Person(name='Alice'), Person(name='Bob')]
+
+        alice.name = "Alice2"
+        println(sourceList) // [Person(name='Alice2'), Person(name='Bob'), Person(name='Charles')]
+        println(copyList) // [Person(name='Alice2'), Person(name='Bob')]
+    }
+
+    fun test6_example2() {
+        // convert collection to other type
+        val sourceList = mutableListOf(1, 2, 3)
+        val copySet = sourceList.toMutableSet() // List -> Set
+        copySet.add(3)
+        copySet.add(4)
+        println(sourceList) // [1, 2, 3]
+        println(copySet) // [1, 2, 3, 4]
+    }
+
+    fun test6_example3() {
+        // create new reference to the same collection instance.
+        val sourceList = mutableListOf(1, 2, 3)
+        val referenceList = sourceList
+        referenceList.add(4)
+        println(sourceList.size) // 4
+        println(referenceList.size) // 4
+    }
+
+    fun test6_example4() {
+        val sourceList = mutableListOf(1, 2, 3)
+        val referenceList: List<Int> = sourceList
+//        referenceList.add(4) // compilation error
+        sourceList.add(4)
+        println(sourceList) // [1, 2, 3, 4]
+        println(referenceList) // [1, 2, 3, 4]
+    }
+//    test6_example1()
+//    test6_example2()
+//    test6_example3()
+    test6_example4()
+}
+
 
 /**
  * Invoke functions on other collections
  */
 fun main() {
-    test5()
+    test6()
 }
