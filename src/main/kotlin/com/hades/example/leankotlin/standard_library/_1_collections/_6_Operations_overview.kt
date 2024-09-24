@@ -14,7 +14,7 @@ package com.hades.example.leankotlin.standard_library._1_collections
  * Common operations
  */
 private fun test2() {
-    // Operations described on these pages return their results without affecting the original collection. 
+    // Operations described on these pages return their results without affecting the original collection.
     fun test2_example1() {
         val numbers = listOf("one", "two", "three", "four")
         numbers.filter { it.length > 3 } // filter not affect the origin collection numbers
