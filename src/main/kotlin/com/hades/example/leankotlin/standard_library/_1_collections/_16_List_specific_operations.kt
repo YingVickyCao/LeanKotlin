@@ -1,6 +1,5 @@
 package com.hades.example.leankotlin.standard_library._1_collections
 
-import com.hades.example.leankotlin.concepts._4_class_and_object._16_delegated_properties.resourceDelegate
 import kotlin.math.sign
 
 // https://kotlinlang.org/docs/list-operations.html
