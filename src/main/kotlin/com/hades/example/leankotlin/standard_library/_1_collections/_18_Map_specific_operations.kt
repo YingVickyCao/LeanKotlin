@@ -155,7 +155,7 @@ private fun test4_2() {
     }
 
     fun test4_2_example3() {
-        // minusAssign(-=) 
+        // minusAssign(-=)
         val numbersMap = mutableMapOf("one" to 1, "two" to 2, "three" to 3)
         numbersMap -= "two"
         println(numbersMap) // {one=1, three=3}

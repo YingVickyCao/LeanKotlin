@@ -12,7 +12,7 @@ fun main() {
 
 // If the primary constructor does not have any annotations or visibility modifiers, the constructor keyword can be omitted:
 // primary constructor 中可以设置默认值。 e,g., isChinese
-class Person constructor(var firstName: String, val isChinese: Boolean = false) {
+private class Person constructor(var firstName: String, val isChinese: Boolean = false) {
     // 同
     // public class Person (var firstName: String) {
 
