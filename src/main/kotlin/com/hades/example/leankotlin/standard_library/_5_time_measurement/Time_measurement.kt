@@ -1,6 +1,7 @@
 package com.hades.example.leankotlin.standard_library._5_time_measurement
 
 import com.hades.example.leankotlin.concepts._1_types._2_data_type._1_basic_types._1_5_file_name._custom_class_name.f
+import java.awt.SystemColor
 import kotlin.time.*
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
@@ -20,7 +21,9 @@ fun main() {
 //    test1_5()
 //    test2_1()
 //    test2_2()
-    test2_3()
+//    test2_3()
+    test3_1()
+    test3_2()
 }
 /**
  * Calculate duration
@@ -204,7 +207,17 @@ private fun test2_3() {
     }
 
     fun test2_3_example2() {
+        // To check if a deadline has passed or a timeout has been reached, use the hasPassedNow() and hasNotPassedNow() extension functions:
+        val timeSource = TimeSource.Monotonic
+        val mark1 = timeSource.markNow()
+        val fiveSeconds: Duration = 5.seconds
+        val mark2 = mark1 + fiveSeconds
 
+        // It hasn't pass 5 seconds yet.
+        println(mark2.hasPassedNow()) // false
+
+        Thread.sleep(6000) // wait 6 seconds
+        println(mark2.hasPassedNow()) // true
     }
     test2_3_example1()
     test2_3_example2()
@@ -217,7 +230,21 @@ private fun test2_3() {
  * Time sources - Default time sources per platform
  */
 private fun test3_1() {
+    // Use different time source
+    // in Android, System.nanoTime() only counts time while the device is active. It loses track of time when the device enters deep sleep.
+    println(System.nanoTime()) // 4305728161625
 
+    // To keep track of time while the device is in deep sleep, you can create a time source that uses SystemClock.elapsedRealtimeNanos():
+//    object RealtimeMonotonicTimeSource:AbstractLongTimeSource(DurationUnit.NANOSECONDS){
+//        override fun read(): Long {
+//            return SystemClock.elapsedRealtimeNanos()
+//        }
+//
+//    }
+//    val elapsed:Duration = RealtimeMonotonicTimeSource.measureTime {
+//        Thread.sleep(100)
+//    }
+//    println(elapsed) // e.g. 103 ms
 }
 
 /**
