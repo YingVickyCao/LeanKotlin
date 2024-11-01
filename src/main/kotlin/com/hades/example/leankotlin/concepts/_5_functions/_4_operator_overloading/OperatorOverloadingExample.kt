@@ -8,7 +8,7 @@ fun main() {
     val example: OperatorOverloadingExample = OperatorOverloadingExample()
 }
 
-class OperatorOverloadingExample {
+private class OperatorOverloadingExample {
 
     /**
      * Example 1 : Unary operations - Increments and decrements : a++ / a--
