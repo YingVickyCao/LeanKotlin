@@ -5,5 +5,6 @@ public class Test {
         MyJBox myJBox = new MyJBox();
         myJBox.put("abc");
         myJBox.put(null);
+        int a = 10;
     }
 }
