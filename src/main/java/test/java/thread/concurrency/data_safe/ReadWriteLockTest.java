@@ -1,18 +1,19 @@
-package test.java.thread.concurrency;
+package test.java.thread.concurrency.data_safe;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 // run: Counter = 10000
-//Completed 100*100 actions in 326 ms
-// 可以实现线程同步
-// https://www.cnblogs.com/vipstone/p/15139226.html
-public class ReentrantLockTest {
+//Completed 100*100 actions in 389 ms
+// https://www.cnblogs.com/java-note/p/18816268
+// 可以实现线程安全
+public class ReadWriteLockTest {
     static int count = 0;
-    // 非公平锁
-    private static final ReentrantLock lock = new ReentrantLock(false);
-    // 公平锁
+    // 默认为非公平锁 ： 多个线程时线程不会按顺序执行
+    private static final ReadWriteLock lock = new ReentrantReadWriteLock(false);
+    // 公平锁 ： 多个线程时线程会按执行顺序
 //    private static final ReentrantLock lock = new ReentrantLock(true);
 
     public static void main(String[] args) throws ExecutionException, InterruptedException, IOException {
@@ -29,7 +30,7 @@ public class ReentrantLockTest {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        lock.lock();
+                        lock.writeLock().lock();
                         try {
                             count++;
                             if (finalI == n && finalJ == k) {
@@ -42,9 +43,7 @@ public class ReentrantLockTest {
                         } finally {
 //                        Log.e(TAG, "finalI = " + finalI + ",finalK = " + finalJ);
 //                        Log.e(TAG, "run: " + "Counter = " + test.count);
-                            if (lock.isLocked()) {
-                                lock.unlock();
-                            }
+                            lock.writeLock().unlock();
                         }
                     }
                 }).start();
