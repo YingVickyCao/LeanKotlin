@@ -3,6 +3,14 @@ package test.java.thread.concurrency;
 import java.io.IOException;
 
 public class Synchronized1 {
+    private static class Test {
+        public int count = 0;
+
+        public synchronized void increment() {
+            count++;
+        }
+    }
+
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
         Test test = new Test();
@@ -31,13 +39,4 @@ public class Synchronized1 {
         System.out.println("Completed " + n + "*" + k + " actions in " + time + " ms");
     }
 }
-
-class Test {
-    public int count = 0;
-
-    public synchronized void increment() {
-        count++;
-    }
-}
-
 
