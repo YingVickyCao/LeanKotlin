@@ -637,6 +637,60 @@ private fun test13() = runBlocking {
     }
 }
 
+/*
+Channel 和 CoroutineScope 的关系？
+Channel 的生命周期通常与创建它的 CoroutineScope 相关联。
+当 CoroutineScope 被取消时，其内部创建的 Channel 也会被取消，所有正在进行的发送和接收操作都会被终止。
+ */
+private fun test14() {
+    /**
+     * send 5
+     * Receive 4
+     * Cancel coroutine scope
+     * producer coroutine catch error:kotlinx.coroutines.JobCancellationException: BlockingCoroutine was cancelled; job=BlockingCoroutine{Cancelling}@67779da0
+     * Send Done
+     * consumer coroutine catch error:kotlinx.coroutines.JobCancellationException: BlockingCoroutine was cancelled; job=BlockingCoroutine{Cancelling}@67779da0
+     * Receive Done
+     * runBlocking catch error:kotlinx.coroutines.JobCancellationException: BlockingCoroutine was cancelled; job=BlockingCoroutine{Cancelled}@67779da0
+     */
+    try {
+        runBlocking {
+            val channel = Channel<Int>()
+            launch(Dispatchers.IO) {
+                try {
+                    for (i in 1..100) {
+                        println("send $i")
+                        delay(1000)
+                        channel.send(i)
+                    }
+                } catch (ex: Exception) {
+                    // producer coroutine catch error:kotlinx.coroutines.JobCancellationException: BlockingCoroutine was cancelled; job=BlockingCoroutine{Cancelling}@67779da0
+                    println("producer coroutine catch error:$ex")
+                }
+                println("Send Done")
+            }
+            launch(Dispatchers.IO) {
+                try {
+                    channel.consumeEach {
+                        println("Receive ${it}")
+                    }
+                } catch (ex: Exception) {
+                    // consumer coroutine catch error:kotlinx.coroutines.JobCancellationException: BlockingCoroutine was cancelled; job=BlockingCoroutine{Cancelling}@67779da0
+                    println("consumer coroutine catch error:$ex ")
+                }
+                println("Receive Done")
+            }
+
+            delay(5000L)
+            println("Cancel coroutine scope")
+            cancel()
+        }
+    } catch (ex: Exception) {
+        // producer coroutine catch error:kotlinx.coroutines.JobCancellationException: BlockingCoroutine was cancelled; job=BlockingCoroutine{Cancelling}@67779da0
+        println("runBlocking catch error:$ex")
+    }
+}
+
 fun main() {
 //    test1()
 //    test2()
@@ -650,5 +704,6 @@ fun main() {
 //    test10()
 //    test11()
 //    test12()
-    test13()
+//    test13()
+    test14()
 }
