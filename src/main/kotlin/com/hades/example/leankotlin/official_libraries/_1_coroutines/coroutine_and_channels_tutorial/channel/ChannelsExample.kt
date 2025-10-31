@@ -1,4 +1,4 @@
-package com.hades.example.leankotlin.official_libraries._1_coroutines
+package com.hades.example.leankotlin.official_libraries._1_coroutines.coroutine_and_channels_tutorial.channel
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.*
@@ -41,7 +41,9 @@ private fun test1() {
  */
 private fun test2() {
 //    test2_exmple1()
-    test2_exmple2()
+//    test2_exmple2()
+//    test2_exmple3()
+    test2_exmple4()
 }
 
 private fun test2_exmple1() {
@@ -53,13 +55,18 @@ private fun test2_exmple1() {
     //Done!
 
     runBlocking {
-        val channel = Channel<Int>()
+        val channel = Channel<Int>(onUndeliveredElement = {
+
+        })
         launch {
             for (x in 1..5) channel.send(x * x)
             channel.close() // We are doing sending
         }
         // here we print received values using `for` loop (until the channel is closed)
         for (y in channel) println(y)
+//        while (!channel.isEmpty){
+//            println(channel.receive())
+//        }
         println("Done!")
     }
 }
@@ -86,6 +93,131 @@ private fun test2_exmple2() {
         println("Done!")
     }
 }
+
+@OptIn(ExperimentalCoroutinesApi::class)
+private fun test2_exmple3() {
+    runBlocking {
+        /**
+         * 使用produce创建的Channel，当发送完后，将自动调用close()。若Channel被关闭后，再调用channel.receive() 会产生 ClosedReceiveChannelException
+         * 如何解决？
+         * 方法 1: 方法 1: 判断当channel没有被关闭时（channel.isClosedForReceive == false）再调用channel.receive()
+         * 方法 2: 使用 channel.consumeEach
+         * 方法 3: 使用 channel.consumeAsFlow
+         */
+        val channel = produce<Int> {
+            for (i in 1..3) {
+                delay(10)
+                println("send $i")
+                send(i)
+            }
+        }
+
+        fun consume_ex(channel: ReceiveChannel<Int>) {
+            /**
+             * send 1
+             * Receive 1
+             * send 2
+             * Receive 2
+             * send 3
+             * Receive 3
+             * Exception in thread "main" kotlinx.coroutines.channels.ClosedReceiveChannelException: Channel was closed
+             */
+            runBlocking {
+//                println("Receive " + channel.receive()) //  1
+//                println("Receive " + channel.receive()) //  2
+//                println("Receive " + channel.receive()) //  3
+//                println("Receive " + channel.receive()) //  4?
+                for (item in channel) {
+                    println("Receive " + channel.receive()) //  i
+                }
+                println("Done!")
+            }
+        }
+
+        fun consume_ok(channel: ReceiveChannel<Int>) {
+            /**
+             * send 1
+             * Receive 1
+             * send 2
+             * Receive 2
+             * send 3
+             * Receive 3
+             * Done!
+             */
+            runBlocking {
+                // 方法 1: 判断当channel没有被关闭时（channel.isClosedForReceive == false）再调用channel.receive()
+//                println("Receive " + channel.receive()) //  1
+//                println("Receive " + channel.receive()) //  2
+//                println("Receive " + channel.receive()) //  3
+//                if (!channel.isClosedForReceive) {
+//                    println("Receive " + channel.receive()) //  4?
+//                }
+
+                // 方法 2: 使用 channel.consumeEach
+//                channel.consumeEach {
+////            // 使用consumeEach时，不用手动判断channel是否已经关闭
+                // consumeEach函数会挂起当前coroutine，直到通道关闭且所有元素被消费完毕。
+//                    println("Receive " + it) //  i
+//                }
+
+                // 方法 3: 使用 channel.consumeAsFlow
+//                channel.consumeAsFlow().collect {
+//                    println("Receive " + it) //  i
+//                }
+                println("Done!")
+            }
+        }
+//        consume_ex(channel)
+        consume_ok(channel)
+    }
+}
+
+@OptIn(ExperimentalCoroutinesApi::class)
+private fun test2_exmple4() {
+    /**
+     * send 1
+     * Receive 1
+     * send 2
+     * Receive 2
+     * send 3
+     * Receive 3
+     */
+
+    /**
+     * send 1
+     * Receive 1
+     * send 2
+     * Receive 2
+     * send 3
+     * Receive 3
+     * Done!
+     */
+    runBlocking {
+        val channel = Channel<Int>()
+        launch(Dispatchers.IO) {
+            for (i in 1..3) {
+                delay(10)
+                println("send $i")
+                channel.send(i)
+            }
+            /**
+             * 使用Channel<Int>()创建的Channel，结束发送收，不会自动调用channel.close()。若没有调用close()方法，消费者coroutine将会被挂起.
+             */
+//            channel.close()
+        }
+
+        launch(Dispatchers.IO) {
+            println("Receive " + channel.receive()) //  1
+            println("Receive " + channel.receive()) //  2
+            println("Receive " + channel.receive()) //  3
+            if (channel.isClosedForReceive) {
+                println("Receive " + channel.receive()) //  4?
+            }
+            println("Done!")
+        }
+    }
+}
+
 
 /**
  * Building channel producers
@@ -125,9 +257,17 @@ private fun test4() {
     //Done!
 
     // this coroutine is producing, possibly infinite, stream of values
-    fun CoroutineScope.produceNumbers(): ReceiveChannel<Int> = produce<Int> {
-        var x = 1
-        while (true) send(x++) // infinite stream of integers starting from 1
+//    fun CoroutineScope.produceNumbers(): ReceiveChannel<Int> = produce<Int> {
+//        var x = 1
+//        while (true) send(x++) // infinite stream of integers starting from 1
+//    }
+
+    fun CoroutineScope.produceNumbers(): ReceiveChannel<Int> {
+        val result: ReceiveChannel<Int> = produce<Int> {
+            var x = 1
+            while (true) send(x++) // infinite stream of integers starting from
+        }
+        return result
     }
 
     // another coroutine or coroutines are consuming that stream, doing some processing, and producing some other results.
@@ -240,10 +380,16 @@ private fun test6() {
 private fun test7() {
     // Multiple coroutines may send to the same channel.
 
-    suspend fun sendString(chanel: SendChannel<String>, s: String, time: Long) {
+    suspend fun sendString(channel: SendChannel<String>, s: String, time: Long) {
         while (true) {
             delay(time)
-            chanel.send(s)
+            channel.send(s)
+        }
+    }
+
+    suspend fun consumeString(channel: ReceiveChannel<String>) {
+        repeat(6) { // receive first six
+            println(channel.receive())
         }
     }
 
@@ -251,9 +397,11 @@ private fun test7() {
         val channel = Channel<String>()
         launch { sendString(channel, "foo", 200L) }
         launch { sendString(channel, "Bar!", 500L) }
-        repeat(6) { // receive first six
-            println(channel.receive())
-        }
+//        repeat(6) { // receive first six
+//            println(channel.receive())
+//        }
+        consumeString(channel)
+
         coroutineContext.cancelChildren() // cancel all children to let main finish
     }
 
@@ -371,6 +519,124 @@ private fun test10() {
     //Next element is ready in 100ms after consumer pause in 300ms : kotlin.Unit
 }
 
+/**
+ * cancel(): CancellationException
+ */
+private fun test11() = runBlocking {
+    val channel = Channel<Int>()
+
+    launch(Dispatchers.Default) {
+        try {
+            for (i in 1..3) {
+                delay(1000)
+                println("send $i")
+                channel.send(i)
+            }
+        } catch (ex: Exception) {
+            System.err.println("producer coroutine catch error:$ex")
+        }
+        println("Send Done")
+    }
+    launch(Dispatchers.IO) {
+        try {
+            println("Receive ${channel.receive()}")
+            println("Receive ${channel.receive()}")
+            channel.cancel()
+            println("Receive ${channel.receive()}") // => java.util.concurrent.CancellationException: Channel was cancelled
+        } catch (ex: Exception) {
+            // consumer coroutine catch error:java.util.concurrent.CancellationException: Channel was cancelled
+            System.err.println("consumer coroutine catch error:$ex ")
+        }
+        println("Receive Done")
+    }
+}
+
+private fun test12() = runBlocking {
+    val channel = Channel<Int>()
+
+    launch(Dispatchers.IO) {
+        try {
+            for (i in 1..3) {
+                println("send $i")
+                /**
+                send 1
+                send 2
+                Receive 1
+                Receive 2
+                send 3
+                Receive 3
+                Send Done
+                Receive Done
+                 */
+                channel.send(i)
+                /**
+                send 1
+                send 2
+                send 3
+                Receive 1
+                Send Done
+                Receive Done
+                 */
+//                channel.trySend(i)
+            }
+            delay(5000L)
+            channel.close()
+        } catch (ex: Exception) {
+            System.err.println("producer coroutine catch error:$ex")
+        }
+        println("Send Done")
+    }
+    launch(Dispatchers.IO) {
+        try {
+            println("Receive ${channel.receive()}")
+            println("Receive ${channel.receive()}")
+            println("Receive ${channel.receive()}") // => java.util.concurrent.CancellationException: Channel was cancelled
+        } catch (ex: Exception) {
+            // consumer coroutine catch error:java.util.concurrent.CancellationException: Channel was cancelled
+            System.err.println("consumer coroutine catch error:$ex ")
+        }
+        println("Receive Done")
+    }
+}
+
+/*
+Channel.tryReceive()
+ */
+private fun test13() = runBlocking {
+    val channel = Channel<Int>()
+
+    launch(Dispatchers.IO) {
+        try {
+            for (i in 1..3) {
+                println("send $i")
+                /**
+                 * Receive Value(Failed)
+                 * Receive Value(Failed)
+                 * Receive Value(Failed)
+                 * Receive Done
+                 * send 1
+                 */
+                channel.send(i)
+            }
+            delay(5000L)
+            channel.close()
+        } catch (ex: Exception) {
+            System.err.println("producer coroutine catch error:$ex")
+        }
+        println("Send Done")
+    }
+    launch(Dispatchers.IO) {
+        try {
+            println("Receive ${channel.tryReceive()}")
+            println("Receive ${channel.tryReceive()}")
+            println("Receive ${channel.tryReceive()}")
+        } catch (ex: Exception) {
+            System.err.println("consumer coroutine catch error:$ex ")
+        }
+        println("Receive Done")
+    }
+}
+
 fun main() {
 //    test1()
 //    test2()
@@ -381,5 +647,8 @@ fun main() {
 //    test7()
 //    test8()
 //    test9()
-    test10()
+//    test10()
+//    test11()
+//    test12()
+    test13()
 }

@@ -5,7 +5,7 @@ package com.hades.example.leankotlin.concepts._4_class_and_object._15_delegation
 
 fun main() {
     test1()
-    test2()
+//    test2()
 }
 
 
@@ -34,6 +34,7 @@ class BaseImpl(val x: Int) : Base {
 // b是委托对象，将b委托给了Derived
 class Derived(b: Base) : Base by b
 
+// 类与接口对象的委托
 fun test1() {
     val b = BaseImpl(10)
     Derived(b).printLine() // 10
@@ -53,8 +54,14 @@ class Derived2(b: Base) : Base by b {
     }
 }
 
+// 类与接口对象的委托
 fun test2() {
     val b = BaseImpl(10)
     b.printLine()           // 10
     Derived2(b).printLine()  // abc
+}
+
+// 属性的委托
+fun  test3(){
+
 }
